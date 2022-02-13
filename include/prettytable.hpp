@@ -47,9 +47,37 @@ struct TableColumn {
   }
 };
 
+enum class TabAlign {
+  /**
+   * @brief options
+   */
+  RIGHT,
+  LEFT,
+  CENTER
+};
+/**
+ * @brief override operator '<<' for type 'TabAlign'
+ */
+std::ostream &operator<<(std::ostream &os, const TabAlign &obj) {
+  switch (obj) {
+    case TabAlign::RIGHT:
+      os << "RIGHT";
+      break;
+    case TabAlign::LEFT:
+      os << "LEFT";
+      break;
+    case TabAlign::CENTER:
+      os << "CENTER";
+      break;
+  }
+  return os;
+};
+
 class PrettyTable {
  private:
   std::vector<TableColumn> _tab;
+
+  TabAlign _align;
 
   std::size_t _precision;
 
@@ -59,20 +87,22 @@ class PrettyTable {
 #pragma region constructors
   /**
    * @brief Construct a new PrettyTable object
-   *
+   * @param align the align
    * @param precision the precision
    */
-  PrettyTable(std::size_t precision = 3) : _precision(precision), _rows(0) {}
+  PrettyTable(TabAlign align = TabAlign::CENTER, std::size_t precision = 3)
+      : _align(align), _precision(precision), _rows(0) {}
 
   /**
    * @brief Construct a new PrettyTable object
    *
    * @param headers the header labels
+   * @param align the align
    * @param precision the precision
    */
   PrettyTable(const std::vector<std::string> &headers,
-              std::size_t precision = 3)
-      : _precision(precision), _rows(0) {
+              TabAlign align = TabAlign::CENTER, std::size_t precision = 3)
+      : _align(align), _precision(precision), _rows(0) {
     this->_tab.resize(headers.size());
     for (int i = 0; i != headers.size(); ++i) {
       this->_tab.at(i).header() = headers.at(i);
@@ -90,6 +120,16 @@ class PrettyTable {
    */
   inline void set_precision(std::size_t precision) {
     this->_precision = precision;
+    return;
+  }
+
+  /**
+   * @brief Set the align
+   *
+   * @param align the align
+   */
+  inline void set_align(TabAlign align) {
+    this->_align = align;
     return;
   }
 #pragma endregion
@@ -350,6 +390,31 @@ class PrettyTable {
   inline const std::string &get_elem(int row_index, int colm_index) const {
     return this->_tab.at(colm_index).data().at(row_index);
   }
+
+  /**
+   * @brief get the info of this table
+   *
+   * @return std::string
+   */
+  inline std::string table_info() const {
+    std::stringstream stream;
+    stream << "{'headers': [";
+    for (int i = 0; i != this->colms(); ++i) {
+      stream << this->_tab.at(i).header();
+      if (i != this->colms() - 1) stream << ", ";
+    }
+    stream << "], 'align': " << this->align();
+    stream << ", 'rows': " << this->rows();
+    stream << ", 'colms': " << this->colms() << '}';
+    return stream.str();
+  }
+
+  /**
+   * @brief get the align of this table
+   *
+   * @return TabAlign
+   */
+  inline TabAlign align() const { return this->_align; }
 #pragma endregion
 
 #pragma region protected methods
@@ -425,31 +490,73 @@ static std::ostream &operator<<(std::ostream &os, const PrettyTable &pretab) {
   for (const auto &elem : pretab.table())
     line += std::string(elem.elem_max_size() + 2, '-') + '+';
   os << line << std::endl;
-  // print headers
-  os << '|';
-  for (const auto &elem : pretab.table()) {
-    auto left_space = static_cast<std::size_t>(
-        (elem.elem_max_size() + 2 - elem.header().size()) / 2);
-    auto right_space =
-        elem.elem_max_size() + 2 - elem.header().size() - left_space;
-    os << std::string(left_space, ' ') << elem.header()
-       << std::string(right_space, ' ') << '|';
+  switch (pretab.align()) {
+    case TabAlign::CENTER: {
+      // print headers
+      os << '|';
+      for (const auto &elem : pretab.table()) {
+        auto left_space = static_cast<std::size_t>(
+            (elem.elem_max_size() + 2 - elem.header().size()) / 2);
+        auto right_space =
+            elem.elem_max_size() + 2 - elem.header().size() - left_space;
+        os << std::string(left_space, ' ') << elem.header()
+           << std::string(right_space, ' ') << '|';
+      }
+      os << '\n' << line;
+      // print data
+      for (int i = 0; i != pretab.rows(); ++i) {
+        os << "\n|";
+        for (int j = 0; j != pretab.colms(); ++j) {
+          const auto &colm = pretab.table().at(j);
+          const auto &elem = pretab.table().at(j).data().at(i);
+          auto left_space = static_cast<std::size_t>(
+              (colm.elem_max_size() + 2 - elem.size()) / 2);
+          auto right_space =
+              colm.elem_max_size() + 2 - elem.size() - left_space;
+          os << std::string(left_space, ' ') << elem
+             << std::string(right_space, ' ') << '|';
+        }
+        os << '\n' << line;
+      }
+    } break;
+    case TabAlign::LEFT: {
+      // print headers
+      os << '|';
+      for (const auto &elem : pretab.table())
+        os << ' ' << std::setw(elem.elem_max_size()) << std::left
+           << elem.header() << " |";
+
+      os << '\n' << line;
+      // print data
+      for (int i = 0; i != pretab.rows(); ++i) {
+        os << "\n|";
+        for (int j = 0; j != pretab.colms(); ++j) {
+          os << ' ' << std::setw(pretab.table().at(j).elem_max_size())
+             << std::left << pretab.get_elem(i, j) << " |";
+        }
+        os << '\n' << line;
+      }
+    } break;
+    case TabAlign::RIGHT: {
+      // print headers
+      os << '|';
+      for (const auto &elem : pretab.table())
+        os << ' ' << std::setw(elem.elem_max_size()) << std::right
+           << elem.header() << " |";
+
+      os << '\n' << line;
+      // print data
+      for (int i = 0; i != pretab.rows(); ++i) {
+        os << "\n|";
+        for (int j = 0; j != pretab.colms(); ++j) {
+          os << ' ' << std::setw(pretab.table().at(j).elem_max_size())
+             << std::right << pretab.get_elem(i, j) << " |";
+        }
+        os << '\n' << line;
+      }
+    } break;
   }
-  os << '\n' << line;
-  // print data
-  for (int i = 0; i != pretab.rows(); ++i) {
-    os << "\n|";
-    for (int j = 0; j != pretab.colms(); ++j) {
-      const auto &colm = pretab.table().at(j);
-      const auto &elem = pretab.table().at(j).data().at(i);
-      auto left_space = static_cast<std::size_t>(
-          (colm.elem_max_size() + 2 - elem.size()) / 2);
-      auto right_space = colm.elem_max_size() + 2 - elem.size() - left_space;
-      os << std::string(left_space, ' ') << elem
-         << std::string(right_space, ' ') << '|';
-    }
-    os << '\n' << line;
-  }
+
   return os;
 }
 

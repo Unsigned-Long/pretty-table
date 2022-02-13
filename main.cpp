@@ -5,7 +5,7 @@
 
 int main(int argc, char const* argv[]) {
   try {
-    ns_pretab::PrettyTable tab;
+    ns_pretab::PrettyTable tab(ns_pretab::TabAlign::CENTER);
     std::cout << tab << std::endl;
 
     tab.add_colums({"id", "z"});
@@ -38,9 +38,12 @@ int main(int argc, char const* argv[]) {
     std::cout << tab << std::endl;
 
     tab.del_colm(0);
+    tab.set_align(ns_pretab::TabAlign::RIGHT);
     std::cout << tab << std::endl;
-    
+
     std::cout << tab.to_csv() << std::endl;
+
+    std::cout << tab.table_info() << std::endl;
 
   } catch (const std::exception& e) {
     std::cerr << e.what() << '\n';
