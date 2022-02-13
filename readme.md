@@ -86,6 +86,9 @@ int main(int argc, char const* argv[]) {
     tab.del_colm(0);
     // output[7]
     std::cout << tab << std::endl;
+      
+    // output[8]
+    std::cout << tab.to_csv() << std::endl;
 
   } catch (const std::exception& e) {
     std::cerr << e.what() << '\n';
@@ -196,7 +199,17 @@ output[7]
 +--------+--------+--------+
 ```
 
+output[8]
 
+```cpp
+x,y,z
+12.000,45.000,67.000
+0.701,0.654,0.527
+0.930,0.687,0.067
+0.008,0.530,0.035
+0.519,0.935,0.679
+0.219,0.459,0.132
+```
 
 ## Apis
 
@@ -235,7 +248,7 @@ output[7]
    */
 ```
 
-### add 'row' or 'column' methods
+### 'row' or 'column' methods
 
 + ___inline PrettyTable &add_colum(const std::string &header)___
 
@@ -408,6 +421,31 @@ output[7]
 ```cpp
   /**
    * @brief clear all rows includes the header labels
+   */
+```
+
+### 'help' methods
+
++ ___inline std::string to_csv(char splitor = ',') const___
+
+```cpp
+  /**
+   * @brief trans the table to csv format
+   *
+   * @param splitor the splitor char
+   * @return std::string
+   */
+```
+
++ ___inline const std::string &get_elem(int row_index, int colm_index) const___
+
+```cpp
+  /**
+   * @brief Get the elem in the table
+   *
+   * @param row_index the index of row
+   * @param colm_index the index of column
+   * @return const std::string&
    */
 ```
 

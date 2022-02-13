@@ -317,6 +317,42 @@ class PrettyTable {
 #pragma endregion
 
 #pragma region help methods
+  /**
+   * @brief trans the table to csv format
+   *
+   * @param splitor the splitor char
+   * @return std::string
+   */
+  inline std::string to_csv(char splitor = ',') const {
+    std::stringstream stream;
+    for (int j = 0; j != this->colms(); ++j) {
+      stream << this->_tab.at(j).header();
+      if (j != this->colms() - 1) stream << splitor;
+    }
+    stream << '\n';
+    for (int i = 0; i != this->rows(); ++i) {
+      for (int j = 0; j != this->colms(); ++j) {
+        stream << this->get_elem(i, j);
+        if (j != this->colms() - 1) stream << splitor;
+      }
+      if (i != this->rows() - 1) stream << '\n';
+    }
+    return stream.str();
+  }
+
+  /**
+   * @brief Get the elem in the table
+   *
+   * @param row_index the index of row
+   * @param colm_index the index of column
+   * @return const std::string&
+   */
+  inline const std::string &get_elem(int row_index, int colm_index) const {
+    return this->_tab.at(colm_index).data().at(row_index);
+  }
+#pragma endregion
+
+#pragma region protected methods
  protected:
   /**
    * @brief insert the arguement(s) to the table

@@ -39,6 +39,8 @@ int main(int argc, char const* argv[]) {
 
     tab.del_colm(0);
     std::cout << tab << std::endl;
+    
+    std::cout << tab.to_csv() << std::endl;
 
   } catch (const std::exception& e) {
     std::cerr << e.what() << '\n';
