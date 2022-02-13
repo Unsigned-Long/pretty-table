@@ -220,7 +220,7 @@ x,y,z
 output[9]
 
 ```cpp
-{'headers': [x, y, z], 'rows': 6, 'colms': 3}
+{'headers': [x, y, z], 'align': RIGHT, 'rows': 6, 'colms': 3}
 ```
 
 ## Apis
