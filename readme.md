@@ -52,7 +52,7 @@ std::cout << ns_pretab::PrettyTable({"lib-name", "version"}).add_row("Pretty Tab
 
 int main(int argc, char const* argv[]) {
   try {
-    ns_pretab::PrettyTable tab;
+    ns_pretab::PrettyTable tab(ns_pretab::TabAlign::CENTER);
     // output[1]
     std::cout << tab << std::endl;
 
@@ -84,11 +84,15 @@ int main(int argc, char const* argv[]) {
     std::cout << tab << std::endl;
 
     tab.del_colm(0);
+    tab.set_align(ns_pretab::TabAlign::RIGHT);
     // output[7]
     std::cout << tab << std::endl;
       
     // output[8]
     std::cout << tab.to_csv() << std::endl;
+
+    // output[9]
+    std::cout << tab.table_info() << std::endl;
 
   } catch (const std::exception& e) {
     std::cerr << e.what() << '\n';
@@ -96,6 +100,8 @@ int main(int argc, char const* argv[]) {
   return 0;
 }
 ```
+
+### Output
 
 output[1]
 
@@ -183,19 +189,19 @@ output[7]
 
 ```cpp
 +--------+--------+--------+
-|   x    |   y    |   z    |
+|      x |      y |      z |
 +--------+--------+--------+
 | 12.000 | 45.000 | 67.000 |
 +--------+--------+--------+
-| 0.701  | 0.654  | 0.527  |
+|  0.701 |  0.654 |  0.527 |
 +--------+--------+--------+
-| 0.930  | 0.687  | 0.067  |
+|  0.930 |  0.687 |  0.067 |
 +--------+--------+--------+
-| 0.008  | 0.530  | 0.035  |
+|  0.008 |  0.530 |  0.035 |
 +--------+--------+--------+
-| 0.519  | 0.935  | 0.679  |
+|  0.519 |  0.935 |  0.679 |
 +--------+--------+--------+
-| 0.219  | 0.459  | 0.132  |
+|  0.219 |  0.459 |  0.132 |
 +--------+--------+--------+
 ```
 
@@ -211,27 +217,48 @@ x,y,z
 0.219,0.459,0.132
 ```
 
+output[9]
+
+```cpp
+{'headers': [x, y, z], 'rows': 6, 'colms': 3}
+```
+
 ## Apis
+
+### TabAlign
+
+```cpp
+enum class TabAlign {
+  /**
+   * @brief options
+   */
+  RIGHT,
+  LEFT,
+  CENTER
+};
+```
 
 ### Constructors
 
-+ ___PrettyTable(std::size_t precision = 3)___
++ ___PrettyTable(TabAlign align = TabAlign::CENTER, std::size_t precision = 3)___
 
 ```cpp
   /**
    * @brief Construct a new PrettyTable object
-   *
+   * 
+   * @param align the align
    * @param precision the precision
    */
 ```
 
-+ ___PrettyTable(const std::vector< std::string> &headers, std::size_t precision = 3)___
++ ___PrettyTable(const std::vector< std::string> &headers, TabAlign align = TabAlign::CENTER, std::size_t precision = 3)___
 
 ```cpp
   /**
    * @brief Construct a new PrettyTable object
    *
    * @param headers the header labels
+   * @param align the align
    * @param precision the precision
    */
 ```
@@ -245,6 +272,16 @@ x,y,z
    * @brief Set the precision for float value
    *
    * @param precision the precision
+   */
+```
+
++ ___inline void set_align(TabAlign align)___
+
+```cpp
+  /**
+   * @brief Set the align 
+   * 
+   * @param align the align
    */
 ```
 
@@ -446,6 +483,16 @@ x,y,z
    * @param row_index the index of row
    * @param colm_index the index of column
    * @return const std::string&
+   */
+```
+
++ ___inline std::string table_info() const___
+
+```cpp
+  /**
+   * @brief get the info of this table
+   *
+   * @return std::string
    */
 ```
 
