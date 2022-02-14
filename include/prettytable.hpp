@@ -212,7 +212,7 @@ class PrettyTable {
    * @param colm_index the index of the column to start inserting
    * @return PrettyTable&
    */
-  inline PrettyTable &insert_colums(const std::vector<std::string> &headers,
+  PrettyTable &insert_colums(const std::vector<std::string> &headers,
                                     int colm_index) {
     std::vector<ns_priv::TableColumn> new_colms(headers.size());
     for (int i = 0; i != headers.size(); ++i) {
@@ -254,7 +254,7 @@ class PrettyTable {
    * @return PrettyTable&
    */
   template <typename ArgType, typename... ArgsType>
-  inline PrettyTable &insert_row(int row_index, const ArgType &arg,
+  PrettyTable &insert_row(int row_index, const ArgType &arg,
                                  const ArgsType &...args) {
     if (sizeof...(args) + 1 != this->colms())
       throw std::runtime_error(
@@ -312,7 +312,7 @@ class PrettyTable {
    * @return true
    * @return false
    */
-  inline bool del_rows(int start_row, std::size_t n) {
+  bool del_rows(int start_row, std::size_t n) {
     if (start_row >= this->rows() || start_row < 0 ||
         start_row + n > this->rows())
       return false;
@@ -386,7 +386,7 @@ class PrettyTable {
    * @param splitor the splitor char
    * @return std::string
    */
-  inline std::string to_csv(char splitor = ',') const {
+  std::string to_csv(char splitor = ',') const {
     std::stringstream stream;
     for (int j = 0; j != this->colms(); ++j) {
       stream << this->_tab.at(j).header();
@@ -419,7 +419,7 @@ class PrettyTable {
    *
    * @return std::string
    */
-  inline std::string table_info() const {
+  std::string table_info() const {
     std::stringstream stream;
     stream << "{'headers': [";
     for (int i = 0; i != this->colms(); ++i) {

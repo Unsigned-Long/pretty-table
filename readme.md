@@ -340,7 +340,7 @@ enum class TabAlign {
    */
 ```
 
-+ ___inline PrettyTable &append_colums(const std::vector< std::string> &headers)___
++ ___PrettyTable &append_colums(const std::vector< std::string> &headers)___
 
 ```cpp
   /**
@@ -383,7 +383,7 @@ enum class TabAlign {
     */
 ```
 
-+ ___template <typename ArgType, typename... ArgsType> inline PrettyTable &insert_row(int row_index, const ArgType &arg, const ArgsType &...args)___
++ ___template <typename ArgType, typename... ArgsType> PrettyTable &insert_row(int row_index, const ArgType &arg, const ArgsType &...args)___
 
 ```cpp
   /**
@@ -439,7 +439,7 @@ enum class TabAlign {
    */
 ```
 
-+ ___inline bool del_rows(int start_row, std::size_t n)___
++ ___bool del_rows(int start_row, std::size_t n)___
 
 ```cpp
   /**
@@ -495,7 +495,7 @@ enum class TabAlign {
 
 ### 'help' methods
 
-+ ___inline std::string to_csv(char splitor = ',') const___
++ ___std::string to_csv(char splitor = ',') const___
 
 ```cpp
   /**
@@ -518,7 +518,7 @@ enum class TabAlign {
    */
 ```
 
-+ ___inline std::string table_info() const___
++ ___std::string table_info() const___
 
 ```cpp
   /**
