@@ -263,7 +263,7 @@ enum class TabAlign {
    */
 ```
 
-### 'set' methods
+### 'set' or 'get' operator
 
 + ___inline void set_precision(std::size_t precision)___
 
@@ -272,6 +272,16 @@ enum class TabAlign {
    * @brief Set the precision for float value
    *
    * @param precision the precision
+   */
+```
+
++ ___inline std::size_t get_precision() const___
+
+```cpp
+  /**
+   * @brief Get the precision
+   *
+   * @return std::size_t
    */
 ```
 
@@ -285,9 +295,29 @@ enum class TabAlign {
    */
 ```
 
-### 'row' or 'column' methods
++ ___inline TabAlign get_align() const___
 
-+ ___inline PrettyTable &add_colum(const std::string &header)___
+```cpp
+  /**
+   * @brief get the align of this table
+   *
+   * @return TabAlign
+   */
+```
+
++ ___inline const std::vector<TableColumn> &get_table() const___
+
+```cpp
+  /**
+   * @brief get the table
+   *
+   * @return const std::vector<TableColumn>&
+   */
+```
+
+### 'row' or 'column' operator
+
++ ___inline PrettyTable &append_colum(const std::string &header)___
 
 ```cpp
   /**
@@ -298,7 +328,7 @@ enum class TabAlign {
    */
 ```
 
-+ ___inline PrettyTable &add_colum_at(const std::string &header, int colm_index)___
++ ___inline PrettyTable &insert_colum(const std::string &header, int colm_index)___
 
 ```cpp
   /**
@@ -310,7 +340,7 @@ enum class TabAlign {
    */
 ```
 
-+ ___inline PrettyTable &add_colums(const std::vector< std::string> &headers)___
++ ___inline PrettyTable &append_colums(const std::vector< std::string> &headers)___
 
 ```cpp
   /**
@@ -321,7 +351,7 @@ enum class TabAlign {
    */
 ```
 
-+ ___inline PrettyTable &add_colums_at(const std::vector< std::string> &headers, int colm_index)___
++ ___inline PrettyTable &insert_colums(const std::vector< std::string> &headers, int colm_index)___
 
 ```cpp
   /**
@@ -333,7 +363,7 @@ enum class TabAlign {
    */
 ```
 
-+ ___template <typename ArgType, typename... ArgsType> inline PrettyTable &add_row(const ArgType &arg, const ArgsType &...args)___
++ ___template <typename ArgType, typename... ArgsType> inline PrettyTable &append_row(const ArgType &arg, const ArgsType &...args)___
 
 ```cpp
   /**
@@ -345,9 +375,15 @@ enum class TabAlign {
    * @param args
    * @return PrettyTable&
    */
+
+   /**
+    * @throw [ erro from 'PrettyTable::add_row' ] the number of items you want
+    * to add is not suitable for this table, it should be equal to the column
+    * count of this table
+    */
 ```
 
-+ ___template <typename ArgType, typename... ArgsType> inline PrettyTable &add_row_at(int row_index, const ArgType &arg, const ArgsType &...args)___
++ ___template <typename ArgType, typename... ArgsType> inline PrettyTable &insert_row(int row_index, const ArgType &arg, const ArgsType &...args)___
 
 ```cpp
   /**
@@ -359,9 +395,15 @@ enum class TabAlign {
    * @param args
    * @return PrettyTable&
    */
+
+   /**
+    * @throw [ erro from 'PrettyTable::add_row' ] the number of items you want
+    * to add is not suitable for this table, it should be equal to the column
+    * count of this table
+    */
 ```
 
-### 'row count' or 'column count' or 'table'  methods
+### 'row' or 'column' counter
 
 + ___inline std::size_t rows() const___
 
@@ -383,17 +425,7 @@ enum class TabAlign {
    */
 ```
 
-+ ___inline const std::vector<TableColumn> &table() const___
-
-```cpp
-  /**
-   * @brief get the table
-   *
-   * @return const std::vector<TableColumn>&
-   */
-```
-
-### 'delete' or 'clear'  methods
+### 'row' or 'column' deletor 
 
 + ___inline bool del_row(int row_index)___
 
@@ -495,4 +527,3 @@ enum class TabAlign {
    * @return std::string
    */
 ```
-
