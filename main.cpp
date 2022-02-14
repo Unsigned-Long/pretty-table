@@ -8,8 +8,8 @@ int main(int argc, char const* argv[]) {
     ns_pretab::PrettyTable tab(ns_pretab::TabAlign::CENTER);
     std::cout << tab << std::endl;
 
-    tab.add_colums({"id", "z"});
-    tab.add_row(12, 34.5f);
+    tab.append_colums({"id", "z"});
+    tab.append_row(12, 34.5f);
 
     // tab.add_row(12, 34.5f, 12.3f, 45.6f);
     /**
@@ -20,17 +20,17 @@ int main(int argc, char const* argv[]) {
 
     std::cout << tab << std::endl;
 
-    tab.add_colums_at({"x", "y"}, 1);
+    tab.insert_colums({"x", "y"}, 1);
     std::cout << tab << std::endl;
 
     ns_geo::RefPoint3f p(0, 12.0f, 45.0f, 67.0f);
-    tab.add_row(p.id(), p.x(), p.y(), p.z());
+    tab.append_row(p.id(), p.x(), p.y(), p.z());
     std::cout << tab << std::endl;
 
     auto rps = ns_geo::RefPointSet3f::randomGenerator(5, 0.0f, 1.0f, 0.0f, 1.0f,
                                                       0.0f, 1.0f);
     for (const auto& [id, p] : rps) {
-      tab.add_row(p.id(), p.x(), p.y(), p.z());
+      tab.append_row(p.id(), p.x(), p.y(), p.z());
     }
     std::cout << tab << std::endl;
 

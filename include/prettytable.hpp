@@ -7,7 +7,7 @@
 #include <string>
 #include <vector>
 
-namespace ns_pretab {
+namespace ns_pretab::ns_priv {
 
 struct TableColumn {
  private:
@@ -16,7 +16,7 @@ struct TableColumn {
    */
   std::string _header;
   std::vector<std::string> _data;
-  std::size_t _max_szie;
+  std::size_t _max_width;
 
  public:
   /**
@@ -25,7 +25,7 @@ struct TableColumn {
   TableColumn() = default;
 
   TableColumn(const std::string &header, const std::vector<std::string> &data)
-      : _header(header), _data(data), _max_szie(header.size()) {}
+      : _header(header), _data(data), _max_width(header.size()) {}
 
   inline std::string &header() { return this->_header; }
   inline const std::string &header() const { return this->_header; }
@@ -33,19 +33,21 @@ struct TableColumn {
   inline std::vector<std::string> &data() { return this->_data; }
   inline const std::vector<std::string> &data() const { return this->_data; }
 
-  inline std::size_t size() const { return this->_data.size(); }
+  inline std::size_t get_max_width() const { return this->_max_width; }
 
-  inline std::size_t elem_max_size() const { return this->_max_szie; }
+  inline void set_max_width(std::size_t max_width) { this->_max_width = max_width; }
 
-  inline void set_max_size(std::size_t max_size) { this->_max_szie = max_size; }
-
-  inline void refind_max_size() {
-    this->_max_szie = this->_header.size();
+  inline void refind_max_width() {
+    this->_max_width = this->_header.size();
     for (const auto &elem : this->_data)
-      if (this->_max_szie < elem.size()) this->_max_szie = elem.size();
+      if (this->_max_width < elem.size()) this->_max_width = elem.size();
     return;
   }
 };
+
+}  // namespace ns_pretab::ns_priv
+
+namespace ns_pretab {
 
 enum class TabAlign {
   /**
@@ -55,10 +57,11 @@ enum class TabAlign {
   LEFT,
   CENTER
 };
+
 /**
  * @brief override operator '<<' for type 'TabAlign'
  */
-std::ostream &operator<<(std::ostream &os, const TabAlign &obj) {
+static std::ostream &operator<<(std::ostream &os, const TabAlign &obj) {
   switch (obj) {
     case TabAlign::RIGHT:
       os << "RIGHT";
@@ -75,7 +78,10 @@ std::ostream &operator<<(std::ostream &os, const TabAlign &obj) {
 
 class PrettyTable {
  private:
-  std::vector<TableColumn> _tab;
+  /**
+   * @brief members
+   */
+  std::vector<ns_priv::TableColumn> _tab;
 
   TabAlign _align;
 
@@ -106,13 +112,13 @@ class PrettyTable {
     this->_tab.resize(headers.size());
     for (int i = 0; i != headers.size(); ++i) {
       this->_tab.at(i).header() = headers.at(i);
-      this->_tab.at(i).set_max_size(headers.at(i).size());
+      this->_tab.at(i).set_max_width(headers.at(i).size());
     }
   }
 
 #pragma endregion
 
-#pragma region 'set' methods
+#pragma region 'set' or 'get' operator
   /**
    * @brief Set the precision for float value
    *
@@ -132,9 +138,33 @@ class PrettyTable {
     this->_align = align;
     return;
   }
+
+  /**
+   * @brief get the align of this table
+   *
+   * @return TabAlign
+   */
+  inline TabAlign get_align() const { return this->_align; }
+
+  /**
+   * @brief Get the precision
+   *
+   * @return std::size_t
+   */
+  inline std::size_t get_precision() const { return this->_precision; }
+
+  /**
+   * @brief get the table
+   *
+   * @return const std::vector<TableColumn>&
+   */
+  inline const std::vector<ns_priv::TableColumn> &get_table() const {
+    return this->_tab;
+  }
+
 #pragma endregion
 
-#pragma region add 'row' or 'column'
+#pragma region 'row' or 'column' operator
 
   /**
    * @brief add a column at the end of this table
@@ -142,8 +172,8 @@ class PrettyTable {
    * @param header the header label of this column
    * @return PrettyTable&
    */
-  inline PrettyTable &add_colum(const std::string &header) {
-    this->add_colum_at(header, this->colms());
+  inline PrettyTable &append_colum(const std::string &header) {
+    this->insert_colum(header, this->colms());
     return *this;
   }
 
@@ -154,13 +184,13 @@ class PrettyTable {
    * @param colm_index the index of the column
    * @return PrettyTable&
    */
-  inline PrettyTable &add_colum_at(const std::string &header, int colm_index) {
+  inline PrettyTable &insert_colum(const std::string &header, int colm_index) {
     auto new_colm_data = std::vector<std::string>(this->rows());
     if (colm_index < 0 || colm_index >= this->_tab.size())
-      this->_tab.push_back(TableColumn(header, new_colm_data));
+      this->_tab.push_back(ns_priv::TableColumn(header, new_colm_data));
     else
       this->_tab.insert(this->_tab.cbegin() + colm_index,
-                        TableColumn(header, new_colm_data));
+                        ns_priv::TableColumn(header, new_colm_data));
     return *this;
   }
 
@@ -170,8 +200,8 @@ class PrettyTable {
    * @param headers
    * @return PrettyTable&
    */
-  inline PrettyTable &add_colums(const std::vector<std::string> &headers) {
-    this->add_colums_at(headers, this->colms());
+  inline PrettyTable &append_colums(const std::vector<std::string> &headers) {
+    this->insert_colums(headers, this->colms());
     return *this;
   }
 
@@ -182,12 +212,12 @@ class PrettyTable {
    * @param colm_index the index of the column to start inserting
    * @return PrettyTable&
    */
-  inline PrettyTable &add_colums_at(const std::vector<std::string> &headers,
+  inline PrettyTable &insert_colums(const std::vector<std::string> &headers,
                                     int colm_index) {
-    std::vector<TableColumn> new_colms(headers.size());
+    std::vector<ns_priv::TableColumn> new_colms(headers.size());
     for (int i = 0; i != headers.size(); ++i) {
       new_colms.at(i).header() = headers.at(i);
-      new_colms.at(i).set_max_size(headers.at(i).size());
+      new_colms.at(i).set_max_width(headers.at(i).size());
       new_colms.at(i).data().resize(this->rows());
     }
     if (colm_index < 0 || colm_index >= this->_tab.size())
@@ -209,8 +239,8 @@ class PrettyTable {
    * @return PrettyTable&
    */
   template <typename ArgType, typename... ArgsType>
-  inline PrettyTable &add_row(const ArgType &arg, const ArgsType &...args) {
-    this->add_row_at(this->rows(), arg, args...);
+  inline PrettyTable &append_row(const ArgType &arg, const ArgsType &...args) {
+    this->insert_row(this->rows(), arg, args...);
     return *this;
   }
 
@@ -224,7 +254,7 @@ class PrettyTable {
    * @return PrettyTable&
    */
   template <typename ArgType, typename... ArgsType>
-  inline PrettyTable &add_row_at(int row_index, const ArgType &arg,
+  inline PrettyTable &insert_row(int row_index, const ArgType &arg,
                                  const ArgsType &...args) {
     if (sizeof...(args) + 1 != this->colms())
       throw std::runtime_error(
@@ -238,7 +268,7 @@ class PrettyTable {
 
 #pragma endregion
 
-#pragma region 'row count' or 'column count' or 'table'
+#pragma region 'row' or 'column' counter
   /**
    * @brief get the row count of this table
    *
@@ -253,16 +283,9 @@ class PrettyTable {
    */
   inline std::size_t colms() const { return this->_tab.size(); }
 
-  /**
-   * @brief get the table
-   *
-   * @return const std::vector<TableColumn>&
-   */
-  inline const std::vector<TableColumn> &table() const { return this->_tab; }
-
 #pragma endregion
 
-#pragma region 'delete' or 'clear'
+#pragma region 'row' or 'column' deletor
 
   /**
    * @brief delete a row
@@ -275,7 +298,7 @@ class PrettyTable {
     if (row_index >= this->rows() || row_index < 0) return false;
     for (auto &elem : this->_tab) {
       elem.data().erase(elem.data().cbegin() + row_index);
-      elem.refind_max_size();
+      elem.refind_max_width();
     }
     --this->_rows;
     return true;
@@ -296,7 +319,7 @@ class PrettyTable {
     for (auto &elem : this->_tab) {
       elem.data().erase(elem.data().cbegin() + start_row,
                         elem.data().cbegin() + start_row + n);
-      elem.refind_max_size();
+      elem.refind_max_width();
     }
 
     this->_rows -= n;
@@ -338,7 +361,7 @@ class PrettyTable {
    */
   inline void clear_rows() {
     for (auto &elem : this->_tab) {
-      elem.set_max_size(elem.header().size());
+      elem.set_max_width(elem.header().size());
       elem.data().clear();
     }
     this->_rows = 0;
@@ -403,22 +426,16 @@ class PrettyTable {
       stream << this->_tab.at(i).header();
       if (i != this->colms() - 1) stream << ", ";
     }
-    stream << "], 'align': " << this->align();
+    stream << "], 'align': " << this->get_align();
     stream << ", 'rows': " << this->rows();
     stream << ", 'colms': " << this->colms() << '}';
     return stream.str();
   }
 
-  /**
-   * @brief get the align of this table
-   *
-   * @return TabAlign
-   */
-  inline TabAlign align() const { return this->_align; }
 #pragma endregion
 
-#pragma region protected methods
  protected:
+#pragma region protected methods
   /**
    * @brief insert the arguement(s) to the table
    *
@@ -440,8 +457,8 @@ class PrettyTable {
     stream >> str;
     auto &colm_data = this->_tab.at(colm_index).data();
     colm_data.insert(colm_data.cbegin() + row_index, str);
-    if (str.size() > this->_tab.at(colm_index).elem_max_size())
-      this->_tab.at(colm_index).set_max_size(str.size());
+    if (str.size() > this->_tab.at(colm_index).get_max_width())
+      this->_tab.at(colm_index).set_max_width(str.size());
     return insert_args(colm_index + 1, row_index, args...);
   }
 
@@ -465,8 +482,8 @@ class PrettyTable {
     stream >> str;
     auto &colm_data = this->_tab.at(colm_index).data();
     colm_data.insert(colm_data.cbegin() + row_index, str);
-    if (str.size() > this->_tab.at(colm_index).elem_max_size())
-      this->_tab.at(colm_index).set_max_size(str.size());
+    if (str.size() > this->_tab.at(colm_index).get_max_width())
+      this->_tab.at(colm_index).set_max_width(str.size());
     return;
   }
 
@@ -481,38 +498,39 @@ class PrettyTable {
  * @return std::ostream&
  */
 static std::ostream &operator<<(std::ostream &os, const PrettyTable &pretab) {
-  if (pretab.table().empty()) {
+  if (pretab.get_table().empty()) {
     os << PrettyTable({"empty"});
     return os;
   }
-  // line
+  // generate line
   std::string line("+");
-  for (const auto &elem : pretab.table())
-    line += std::string(elem.elem_max_size() + 2, '-') + '+';
+  for (const auto &elem : pretab.get_table())
+    line += std::string(elem.get_max_width() + 2, '-') + '+';
   os << line << std::endl;
-  switch (pretab.align()) {
+  // print headers
+  os << '|';
+  for (const auto &elem : pretab.get_table()) {
+    auto left_space = static_cast<std::size_t>(
+        (elem.get_max_width() + 2 - elem.header().size()) / 2);
+    auto right_space =
+        elem.get_max_width() + 2 - elem.header().size() - left_space;
+    os << std::string(left_space, ' ') << elem.header()
+       << std::string(right_space, ' ') << '|';
+  }
+  os << '\n' << line;
+
+  switch (pretab.get_align()) {
     case TabAlign::CENTER: {
-      // print headers
-      os << '|';
-      for (const auto &elem : pretab.table()) {
-        auto left_space = static_cast<std::size_t>(
-            (elem.elem_max_size() + 2 - elem.header().size()) / 2);
-        auto right_space =
-            elem.elem_max_size() + 2 - elem.header().size() - left_space;
-        os << std::string(left_space, ' ') << elem.header()
-           << std::string(right_space, ' ') << '|';
-      }
-      os << '\n' << line;
       // print data
       for (int i = 0; i != pretab.rows(); ++i) {
         os << "\n|";
         for (int j = 0; j != pretab.colms(); ++j) {
-          const auto &colm = pretab.table().at(j);
-          const auto &elem = pretab.table().at(j).data().at(i);
+          const auto &colm = pretab.get_table().at(j);
+          const auto &elem = pretab.get_table().at(j).data().at(i);
           auto left_space = static_cast<std::size_t>(
-              (colm.elem_max_size() + 2 - elem.size()) / 2);
+              (colm.get_max_width() + 2 - elem.size()) / 2);
           auto right_space =
-              colm.elem_max_size() + 2 - elem.size() - left_space;
+              colm.get_max_width() + 2 - elem.size() - left_space;
           os << std::string(left_space, ' ') << elem
              << std::string(right_space, ' ') << '|';
         }
@@ -520,36 +538,22 @@ static std::ostream &operator<<(std::ostream &os, const PrettyTable &pretab) {
       }
     } break;
     case TabAlign::LEFT: {
-      // print headers
-      os << '|';
-      for (const auto &elem : pretab.table())
-        os << ' ' << std::setw(elem.elem_max_size()) << std::left
-           << elem.header() << " |";
-
-      os << '\n' << line;
       // print data
       for (int i = 0; i != pretab.rows(); ++i) {
         os << "\n|";
         for (int j = 0; j != pretab.colms(); ++j) {
-          os << ' ' << std::setw(pretab.table().at(j).elem_max_size())
+          os << ' ' << std::setw(pretab.get_table().at(j).get_max_width())
              << std::left << pretab.get_elem(i, j) << " |";
         }
         os << '\n' << line;
       }
     } break;
     case TabAlign::RIGHT: {
-      // print headers
-      os << '|';
-      for (const auto &elem : pretab.table())
-        os << ' ' << std::setw(elem.elem_max_size()) << std::right
-           << elem.header() << " |";
-
-      os << '\n' << line;
       // print data
       for (int i = 0; i != pretab.rows(); ++i) {
         os << "\n|";
         for (int j = 0; j != pretab.colms(); ++j) {
-          os << ' ' << std::setw(pretab.table().at(j).elem_max_size())
+          os << ' ' << std::setw(pretab.get_table().at(j).get_max_width())
              << std::right << pretab.get_elem(i, j) << " |";
         }
         os << '\n' << line;
