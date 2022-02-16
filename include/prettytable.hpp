@@ -453,8 +453,7 @@ class PrettyTable {
     stream << std::setiosflags(std::ios::fixed)
            << std::setprecision(this->_precision);
     stream << arg;
-    std::string str;
-    stream >> str;
+    std::string str = stream.str();
     auto &colm_data = this->_tab.at(colm_index).data();
     colm_data.insert(colm_data.cbegin() + row_index, str);
     if (str.size() > this->_tab.at(colm_index).get_max_width())
@@ -478,8 +477,7 @@ class PrettyTable {
     stream << std::setiosflags(std::ios::fixed)
            << std::setprecision(this->_precision);
     stream << arg;
-    std::string str;
-    stream >> str;
+    std::string str = stream.str();
     auto &colm_data = this->_tab.at(colm_index).data();
     colm_data.insert(colm_data.cbegin() + row_index, str);
     if (str.size() > this->_tab.at(colm_index).get_max_width())
