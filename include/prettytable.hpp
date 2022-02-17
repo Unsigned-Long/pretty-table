@@ -402,6 +402,7 @@ namespace ns_pretab {
      */
     std::string to_csv(char splitor = ',') const {
       std::stringstream stream;
+      stream << std::setiosflags(std::ios::fixed) << std::setprecision(this->_precision) << std::boolalpha;
       for (int j = 0; j != this->colms(); ++j) {
         stream << this->_tab.at(j).header();
         if (j != this->colms() - 1)
@@ -469,8 +470,7 @@ namespace ns_pretab {
                      const ArgType &arg, const ArgsType &...args) {
       // using stringstream to generate the string
       std::stringstream stream;
-      stream << std::setiosflags(std::ios::fixed)
-             << std::setprecision(this->_precision);
+      stream << std::setiosflags(std::ios::fixed) << std::setprecision(this->_precision) << std::boolalpha;
       stream << arg;
       // get the string
       std::string str = stream.str();
@@ -497,8 +497,7 @@ namespace ns_pretab {
                      const ArgType &arg) {
       // using stringstream to generate the string
       std::stringstream stream;
-      stream << std::setiosflags(std::ios::fixed)
-             << std::setprecision(this->_precision);
+      stream << std::setiosflags(std::ios::fixed) << std::setprecision(this->_precision) << std::boolalpha;
       stream << arg;
       // get the string
       std::string str = stream.str();
