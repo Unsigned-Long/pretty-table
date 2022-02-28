@@ -1,3 +1,5 @@
+
+
 # Pretty Table
 
 [TOC]
@@ -24,208 +26,171 @@ _|_|_|_|    _|_|_|  _|_|_|    _|    _|_|
 
 
 
-## OverView
+## 1. OverView
 
 this lib is used to tabulate data on the console:
 
 ```cpp
 // cpp source code
-std::cout << ns_pretab::PrettyTable({"lib-name", "version"}).add_row("Pretty Table", "0.0.1") << std::endl;
+std::cout << ns_pretab::PrettyTable({"lib-name", "version"}).appendRow("Pretty Table", "0.0.1") << std::endl;
 // output
-+----------+---------+
-| lib-name | version |
-+----------+---------+
-|  Pretty  |  0.0.1  |
-+----------+---------+
++--------------+---------+
+|   lib-name   | version |
++--------------+---------+
+| Pretty Table |  0.0.1  |
++--------------+---------+
 ```
 
 
 
-## Usage
+## 2. Usage
 
-### Source Code
+### 1. Source Code
 
 ```cpp
-#include <iostream>
-
+#include "artwork/geometry/point.hpp"
 #include "prettytable.hpp"
 
-int main(int argc, char const* argv[]) {
+int main(int argc, char const *argv[]) {
   try {
-    ns_pretab::PrettyTable tab(ns_pretab::TabAlign::CENTER);
-    // output[1]
+    // create a table from a csv file 
+    auto tab = ns_pretab::PrettyTable::fromCSV("../data/info.csv", 3, 3);
+
+    // set aligns foe columns
+    tab.setAlign(1, ns_pretab::TabAlign::LEFT);
+    tab.setAlign(2, ns_pretab::TabAlign::RIGHT);
+
+    // output the table info
+    std::cout << tab.tableInfo() << std::endl;
+    // print the table
     std::cout << tab << std::endl;
 
-    tab.add_colums({"id", "z"});
-    tab.add_row(12, 34.5f);
+    // define a table
+    ns_pretab::PrettyTable tab2({"id", "X", "Y", "Z"});
+    // some settings
+    tab2.setAlign(ns_pretab::TabAlign::RIGHT).setPrecision(3);
 
-    // output[2]
-    std::cout << tab << std::endl;
-
-    tab.add_colums_at({"x", "y"}, 1);
-    // output[3]
-    std::cout << tab << std::endl;
-
-    ns_geo::RefPoint3f p(0, 12.0f, 45.0f, 67.0f);
-    tab.add_row(p.id(), p.x(), p.y(), p.z());
-    // output[4]
-    std::cout << tab << std::endl;
-
-    auto rps = ns_geo::RefPointSet3f::randomGenerator(5, 0.0f, 1.0f, 0.0f, 1.0f,
-                                                      0.0f, 1.0f);
-    for (const auto& [id, p] : rps) {
-      tab.add_row(p.id(), p.x(), p.y(), p.z());
+    // add data
+    auto rps = ns_geo::RefPointSet3f::randomGenerator(9, 0.0f, 10.0f, 10.0f, 434.0f, 23.0f, 156.0f);
+    for (const auto &[id, rp] : rps) {
+      tab2.appendRow(id, rp.x(), rp.y(), rp.z());
     }
-    // output[5]
-    std::cout << tab << std::endl;
 
-    tab.del_row(0);
-    // output[6]
-    std::cout << tab << std::endl;
+    //add a new column
+    tab2.appendColumn("distance", ns_pretab::TabAlign::RIGHT, 3);
+    for (int i = 0; i != rps.size(); ++i) {
+      tab2.setItem(ns_geo::distance(ns_geo::Point3f(0.0f, 0.0f, 0.0f), rps.at(i)), i, 4);
+    }
 
-    tab.del_colm(0);
-    tab.set_align(ns_pretab::TabAlign::RIGHT);
-    // output[7]
-    std::cout << tab << std::endl;
-      
-    // output[8]
-    std::cout << tab.to_csv() << std::endl;
+    // some print work
+    std::cout << tab2.tableInfo() << std::endl;
+    std::cout << tab2 << std::endl;
+    
+    // trans
+    std::cout << tab2.toCSV() << std::endl;
+    std::cout << tab2.toMarkDown() << std::endl;
 
-    // output[9]
-    std::cout << tab.table_info() << std::endl;
-
-  } catch (const std::exception& e) {
+  } catch (const std::exception &e) {
     std::cerr << e.what() << '\n';
   }
   return 0;
 }
 ```
 
-### Output
-
-output[1]
+### 2. Output
 
 ```cpp
-+-------+
-| empty |
-+-------+
+{'rows': 10, 'colms': 3, 'columns': [{'id': center}, {'name': left}, {'score': right}]}
++--------+--------+-------+
+|   id   |  name  | score |
++--------+--------+-------+
+| 201901 | Tom    |  81.1 |
++--------+--------+-------+
+| 201902 | Jhon   |  93.5 |
++--------+--------+-------+
+| 201903 | Jerry  |  95.3 |
++--------+--------+-------+
+| 201904 | Albert |  95.6 |
++--------+--------+-------+
+| 201905 | Mary   |  81.1 |
++--------+--------+-------+
+| 201906 | Lily   |  95.6 |
++--------+--------+-------+
+| 201907 | Lina   |  95.3 |
++--------+--------+-------+
+| 201908 | Jack   |  81.1 |
++--------+--------+-------+
+| 201909 | Bob    |  81.1 |
++--------+--------+-------+
+| 201910 | Stack  |  95.3 |
++--------+--------+-------+
+
+{'rows': 9, 'colms': 5, 'columns': [{'id': right}, {'X': right}, {'Y': right}, {'Z': right}, {'distance': right}]}
++----+-------+---------+---------+----------+
+| id |   X   |    Y    |    Z    | distance |
++----+-------+---------+---------+----------+
+|  8 | 2.749 | 212.558 |  81.043 |  208.451 |
++----+-------+---------+---------+----------+
+|  7 | 8.847 |  40.819 | 123.196 |  421.840 |
++----+-------+---------+---------+----------+
+|  6 | 9.826 | 164.904 | 123.603 |  236.211 |
++----+-------+---------+---------+----------+
+|  5 | 3.282 |  30.125 | 124.372 |  303.018 |
++----+-------+---------+---------+----------+
+|  4 | 7.012 | 287.262 |  93.082 |  302.047 |
++----+-------+---------+---------+----------+
+|  3 | 9.304 | 301.192 |  31.890 |  128.011 |
++----+-------+---------+---------+----------+
+|  2 | 0.077 | 234.593 |  27.598 |  206.319 |
++----+-------+---------+---------+----------+
+|  1 | 5.194 | 406.310 | 113.289 |  130.084 |
++----+-------+---------+---------+----------+
+|  0 | 2.190 | 204.468 |  40.495 |  227.501 |
++----+-------+---------+---------+----------+
+
+id,X,Y,Z,distance
+8,2.749,212.558,81.043,208.451
+7,8.847,40.819,123.196,421.840
+6,9.826,164.904,123.603,236.211
+5,3.282,30.125,124.372,303.018
+4,7.012,287.262,93.082,302.047
+3,9.304,301.192,31.890,128.011
+2,0.077,234.593,27.598,206.319
+1,5.194,406.310,113.289,130.084
+0,2.190,204.468,40.495,227.501
+
+|id|X|Y|Z|distance|
+|----|----|----|----|----|
+|8|2.749|212.558|81.043|208.451|
+|7|8.847|40.819|123.196|421.840|
+|6|9.826|164.904|123.603|236.211|
+|5|3.282|30.125|124.372|303.018|
+|4|7.012|287.262|93.082|302.047|
+|3|9.304|301.192|31.890|128.011|
+|2|0.077|234.593|27.598|206.319|
+|1|5.194|406.310|113.289|130.084|
+|0|2.190|204.468|40.495|227.501|
 ```
 
-output[2]
+| id   | X     | Y       | Z       | distance |
+| ---- | ----- | ------- | ------- | -------- |
+| 8    | 2.749 | 212.558 | 81.043  | 208.451  |
+| 7    | 8.847 | 40.819  | 123.196 | 421.840  |
+| 6    | 9.826 | 164.904 | 123.603 | 236.211  |
+| 5    | 3.282 | 30.125  | 124.372 | 303.018  |
+| 4    | 7.012 | 287.262 | 93.082  | 302.047  |
+| 3    | 9.304 | 301.192 | 31.890  | 128.011  |
+| 2    | 0.077 | 234.593 | 27.598  | 206.319  |
+| 1    | 5.194 | 406.310 | 113.289 | 130.084  |
+| 0    | 2.190 | 204.468 | 40.495  | 227.501  |
 
-```cpp
-+----+--------+
-| id |   z    |
-+----+--------+
-| 12 | 34.500 |
-+----+--------+
-```
+## 3. Structure
 
-output[3]
+<img src="./drawer/Pretty-Table.png">
 
-```cpp
-+----+---+---+--------+
-| id | x | y |   z    |
-+----+---+---+--------+
-| 12 |   |   | 34.500 |
-+----+---+---+--------+
-```
+## 4. Apis
 
-output[4]
-
-```cpp
-+----+--------+--------+--------+
-| id |   x    |   y    |   z    |
-+----+--------+--------+--------+
-| 12 |        |        | 34.500 |
-+----+--------+--------+--------+
-| 0  | 12.000 | 45.000 | 67.000 |
-+----+--------+--------+--------+
-```
-
-output[5]
-
-```cpp
-+----+--------+--------+--------+
-| id |   x    |   y    |   z    |
-+----+--------+--------+--------+
-| 12 |        |        | 34.500 |
-+----+--------+--------+--------+
-| 0  | 12.000 | 45.000 | 67.000 |
-+----+--------+--------+--------+
-| 4  | 0.701  | 0.654  | 0.527  |
-+----+--------+--------+--------+
-| 3  | 0.930  | 0.687  | 0.067  |
-+----+--------+--------+--------+
-| 2  | 0.008  | 0.530  | 0.035  |
-+----+--------+--------+--------+
-| 1  | 0.519  | 0.935  | 0.679  |
-+----+--------+--------+--------+
-| 0  | 0.219  | 0.459  | 0.132  |
-+----+--------+--------+--------+
-```
-
-output[6]
-
-```cpp
-+----+--------+--------+--------+
-| id |   x    |   y    |   z    |
-+----+--------+--------+--------+
-| 0  | 12.000 | 45.000 | 67.000 |
-+----+--------+--------+--------+
-| 4  | 0.701  | 0.654  | 0.527  |
-+----+--------+--------+--------+
-| 3  | 0.930  | 0.687  | 0.067  |
-+----+--------+--------+--------+
-| 2  | 0.008  | 0.530  | 0.035  |
-+----+--------+--------+--------+
-| 1  | 0.519  | 0.935  | 0.679  |
-+----+--------+--------+--------+
-| 0  | 0.219  | 0.459  | 0.132  |
-+----+--------+--------+--------+
-```
-
-output[7]
-
-```cpp
-+--------+--------+--------+
-|      x |      y |      z |
-+--------+--------+--------+
-| 12.000 | 45.000 | 67.000 |
-+--------+--------+--------+
-|  0.701 |  0.654 |  0.527 |
-+--------+--------+--------+
-|  0.930 |  0.687 |  0.067 |
-+--------+--------+--------+
-|  0.008 |  0.530 |  0.035 |
-+--------+--------+--------+
-|  0.519 |  0.935 |  0.679 |
-+--------+--------+--------+
-|  0.219 |  0.459 |  0.132 |
-+--------+--------+--------+
-```
-
-output[8]
-
-```cpp
-x,y,z
-12.000,45.000,67.000
-0.701,0.654,0.527
-0.930,0.687,0.067
-0.008,0.530,0.035
-0.519,0.935,0.679
-0.219,0.459,0.132
-```
-
-output[9]
-
-```cpp
-{'headers': [x, y, z], 'align': RIGHT, 'rows': 6, 'colms': 3}
-```
-
-## Apis
-
-### TabAlign
+### 1. TabAlign
 
 ```cpp
 enum class TabAlign {
@@ -238,117 +203,142 @@ enum class TabAlign {
 };
 ```
 
-### Constructors
+### 2. Constructors
 
-+ ___PrettyTable(TabAlign align = TabAlign::CENTER, std::size_t precision = 3)___
++ ___TabDataModel(const std::vector<std::string> &headers)___
 
 ```cpp
-  /**
-   * @brief Construct a new PrettyTable object
-   * 
-   * @param align the align
-   * @param precision the precision
-   */
+/**
+ * @brief Construct a new TabDataModel object
+ *
+ * @param headers the header labels for the table
+ */
 ```
 
-+ ___PrettyTable(const std::vector< std::string> &headers, TabAlign align = TabAlign::CENTER, std::size_t precision = 3)___
++ ___TabDataModel()___
 
 ```cpp
-  /**
-   * @brief Construct a new PrettyTable object
-   *
-   * @param headers the header labels
-   * @param align the align
-   * @param precision the precision
-   */
+/**
+ * default constructor
+ */
 ```
 
-### 'set' or 'get' operator
+### 3. Attribute Operator
 
-+ ___inline void set_precision(std::size_t precision)___
++ ___const std::string &headerAt(std::size_t column) const___
 
 ```cpp
-  /**
-   * @brief Set the precision for float value
-   *
-   * @param precision the precision
-   */
+/**
+ * @brief get the header label at 'column'
+ *
+ * @param column
+ * @return std::string&
+ */
 ```
 
-+ ___inline std::size_t get_precision() const___
++ ___TabDataModel &setHeader(std::size_t column, const std::string header)___
 
 ```cpp
-  /**
-   * @brief Get the precision
-   *
-   * @return std::size_t
-   */
+/**
+ * @brief Set the Header at 'column'
+ * 
+ * @return TabDataModel& 
+ */
 ```
 
-+ ___inline void set_align(TabAlign align)___
++ ___const TabAlign &alignAt(std::size_t column) const___
 
 ```cpp
-  /**
-   * @brief Set the align 
-   * 
-   * @param align the align
-   */
+/**
+ * @brief get the align at 'column'
+ *
+ * @param column
+ * @return TabAlign&
+ */
 ```
 
-+ ___inline TabAlign get_align() const___
++ ___TabDataModel &setAlign(std::size_t column, TabAlign align)___
 
 ```cpp
-  /**
-   * @brief get the align of this table
-   *
-   * @return TabAlign
-   */
+/**
+ * @brief Set the Align at 'column'
+ * 
+ * @return TabDataModel& 
+ */
 ```
 
-+ ___inline const std::vector<TableColumn> &get_table() const___
++ ___TabDataModel &setAlign(TabAlign align)___
 
 ```cpp
-  /**
-   * @brief get the table
-   *
-   * @return const std::vector<TableColumn>&
-   */
+/**
+ * @brief Set the Align for all columns
+ * 
+ * @return TabDataModel& 
+ */
 ```
 
-### 'row' or 'column' operator
-
-+ ___inline PrettyTable &append_colum(const std::string &header)___
++ ___const std::size_t &precisionAt(std::size_t column) const___
 
 ```cpp
-  /**
-   * @brief add a column at the end of this table
-   *
-   * @param header the header label of this column
-   * @return PrettyTable&
-   */
+/**
+ * @brief get the precision at 'column'
+ *
+ * @return std::size_t&
+ */
 ```
 
-+ ___inline PrettyTable &insert_colum(const std::string &header, int colm_index)___
++ ___TabDataModel &setPrecision(std::size_t column, std::size_t precision)___
 
 ```cpp
-  /**
-   * @brief add a column at the 'colm_index' of this table
-   *
-   * @param header the header table
-   * @param colm_index the index of the column
-   * @return PrettyTable&
-   */
+/**
+ * @brief Set the Precision at 'column'
+ * 
+ * @return TabDataModel& 
+ */
 ```
 
-+ ___PrettyTable &append_colums(const std::vector< std::string> &headers)___
++ ___TabDataModel &setPrecision(std::size_t precision)___
 
 ```cpp
-  /**
-   * @brief add some columns at the end of this table
-   *
-   * @param headers
-   * @return PrettyTable&
-   */
+/**
+ * @brief Set the Precision for all columns
+ * 
+ * @return TabDataModel& 
+ */
+```
+
+### 4. Data Operator
+
++ ___template <typename ItemType> TabDataModel &setItem(const ItemType &item, std::size_t row, std::size_t column)___
+
+```cpp
+/**
+ * @brief Set the Item at [row, column]
+ *
+ * @return TabDataModel&
+ */
+```
+
++ ___template <typename... ArgvsType> TabDataModel &appendRow(const ArgvsType &...argvs)___
+
+```cpp
+/**
+ * @brief add a row to the end of the table
+ *
+ * @tparam ArgvsType the types of the argvs
+ * @param argvs the arguements
+ * @return TabDataModel&
+ */
+```
+
++ ___TabDataModel &appendColumn(const std::string &header, TabAlign align = TabAlign::CENTER, std::size_t precision = 1)___
+
+```cpp
+/**
+ * @brief add a column to the end of the table
+ *
+ * @return TabDataModel&
+ */
 ```
 
 + ___inline PrettyTable &insert_colums(const std::vector< std::string> &headers, int colm_index)___
@@ -363,167 +353,72 @@ enum class TabAlign {
    */
 ```
 
-+ ___template <typename ArgType, typename... ArgsType> inline PrettyTable &append_row(const ArgType &arg, const ArgsType &...args)___
+### 5. Helpers
+
++ ___std::string toCSV(char splitor = ',') const___
 
 ```cpp
-  /**
-   * @brief add a row to this table at the end
-   *
-   * @tparam ArgType the type of the arg
-   * @tparam ArgsType the types of the args
-   * @param arg
-   * @param args
-   * @return PrettyTable&
-   */
-
-   /**
-    * @throw [ erro from 'PrettyTable::add_row' ] the number of items you want
-    * to add is not suitable for this table, it should be equal to the column
-    * count of this table
-    */
+/**
+ * @brief translate the table to csv file format
+ *
+ * @param splitor the splitor
+ * @return std::string
+ */
 ```
 
-+ ___template <typename ArgType, typename... ArgsType> PrettyTable &insert_row(int row_index, const ArgType &arg, const ArgsType &...args)___
++ ___static PrettyTable fromCSV(const std::string &filename, std::size_t columnCount, std::size_t precision = 1, bool withHeaders = true, char splitor = ',')___
 
 ```cpp
-  /**
-   * @brief add a row to this table at the 'row_index'
-   *
-   * @tparam ArgType the type of the arg
-   * @tparam ArgsType the types of the args
-   * @param arg
-   * @param args
-   * @return PrettyTable&
-   */
-
-   /**
-    * @throw [ erro from 'PrettyTable::add_row' ] the number of items you want
-    * to add is not suitable for this table, it should be equal to the column
-    * count of this table
-    */
+/**
+ * @brief load the csv file data to comstruct a table
+ *
+ * @param filename the name of csv file
+ * @param columnCount the count of columns
+ * @param withHeaders is the csv file with headers
+ * @param splitor the splitor
+ * @return PrettyTable
+ */
 ```
 
-### 'row' or 'column' counter
-
-+ ___inline std::size_t rows() const___
++ ___std::string toMarkDown() const___
 
 ```cpp
-  /**
-   * @brief get the row count of this table
-   *
-   * @return std::size_t
-   */
+/**
+ * @brief translate the table to mark down format
+ *
+ * @return std::string
+ */
 ```
 
-+ ___inline std::size_t colms() const___
++ ___std::string tableInfo() const___
 
 ```cpp
-  /**
-   * @brief get the column count of this table
-   *
-   * @return std::size_t
-   */
+/**
+ * @brief print the table's info
+ * 
+ * @return std::string 
+ */
 ```
 
-### 'row' or 'column' deletor 
 
-+ ___inline bool del_row(int row_index)___
 
-```cpp
-  /**
-   * @brief delete a row
-   *
-   * @param row_index the index of the row
-   * @return true
-   * @return false
-   */
-```
 
-+ ___bool del_rows(int start_row, std::size_t n)___
 
-```cpp
-  /**
-   * @brief delete some rows
-   *
-   * @param start_row the start index of the row
-   * @param n the count
-   * @return true
-   * @return false
-   */
-```
 
-+ ___inline bool del_colm(int colm_index)___
 
-```cpp
-  /**
-   * @brief delete a column
-   *
-   * @param colm_index the index of the column
-   * @return true
-   * @return false
-   */
-```
 
-+ ___inline bool del_colms(int start_colm, std::size_t n)___
 
-```cpp
-  /**
-   * @brief delete some columns
-   *
-   * @param start_colm the start index of the column
-   * @param n the count
-   * @return true
-   * @return false
-   */
-```
 
-+ ___inline void clear_rows()___
 
-```cpp
-  /**
-   * @brief clear all rows but retain the header labels
-   */
-```
 
-+ ___inline void clear()___
 
-```cpp
-  /**
-   * @brief clear all rows includes the header labels
-   */
-```
 
-### 'help' methods
 
-+ ___std::string to_csv(char splitor = ',') const___
 
-```cpp
-  /**
-   * @brief trans the table to csv format
-   *
-   * @param splitor the splitor char
-   * @return std::string
-   */
-```
 
-+ ___inline const std::string &get_elem(int row_index, int colm_index) const___
 
-```cpp
-  /**
-   * @brief Get the elem in the table
-   *
-   * @param row_index the index of row
-   * @param colm_index the index of column
-   * @return const std::string&
-   */
-```
 
-+ ___std::string table_info() const___
 
-```cpp
-  /**
-   * @brief get the info of this table
-   *
-   * @return std::string
-   */
-```
+
+
+
