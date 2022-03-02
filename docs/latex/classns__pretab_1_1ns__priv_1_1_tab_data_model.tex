@@ -1,0 +1,317 @@
+\hypertarget{classns__pretab_1_1ns__priv_1_1_tab_data_model}{}\doxysection{ns\+\_\+pretab\+::ns\+\_\+priv\+::Tab\+Data\+Model Class Reference}
+\label{classns__pretab_1_1ns__priv_1_1_tab_data_model}\index{ns\_pretab::ns\_priv::TabDataModel@{ns\_pretab::ns\_priv::TabDataModel}}
+
+
+Inheritance diagram for ns\+\_\+pretab\+::ns\+\_\+priv\+::Tab\+Data\+Model\+:
+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=205pt]{classns__pretab_1_1ns__priv_1_1_tab_data_model__inherit__graph}
+\end{center}
+\end{figure}
+\doxysubsection*{Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\hyperlink{classns__pretab_1_1ns__priv_1_1_tab_data_model_a30102d3e44420571b87941a2c20795c2}{Tab\+Data\+Model}} (const std\+::vector$<$ std\+::string $>$ \&headers)
+\begin{DoxyCompactList}\small\item\em Construct a new \mbox{\hyperlink{classns__pretab_1_1ns__priv_1_1_tab_data_model}{Tab\+Data\+Model}} object. \end{DoxyCompactList}\item 
+bool \mbox{\hyperlink{classns__pretab_1_1ns__priv_1_1_tab_data_model_a440dc9e7a8fb9db759fbb297c90e875e}{empty}} () const
+\begin{DoxyCompactList}\small\item\em is the table empty \end{DoxyCompactList}\item 
+std\+::size\+\_\+t \mbox{\hyperlink{classns__pretab_1_1ns__priv_1_1_tab_data_model_abee660449c2f61c276978aabc66b53fe}{row\+Count}} () const
+\begin{DoxyCompactList}\small\item\em the row count \end{DoxyCompactList}\item 
+std\+::size\+\_\+t \mbox{\hyperlink{classns__pretab_1_1ns__priv_1_1_tab_data_model_afb05a6a7423e0ac03814e1e300700e06}{column\+Count}} () const
+\begin{DoxyCompactList}\small\item\em the column count \end{DoxyCompactList}\item 
+const std\+::string \& \mbox{\hyperlink{classns__pretab_1_1ns__priv_1_1_tab_data_model_a0f04c782e5c7023927fec1d93872c3ac}{header\+At}} (std\+::size\+\_\+t column) const
+\begin{DoxyCompactList}\small\item\em get the header label at \textquotesingle{}column\textquotesingle{} \end{DoxyCompactList}\item 
+\mbox{\hyperlink{classns__pretab_1_1ns__priv_1_1_tab_data_model}{Tab\+Data\+Model}} \& \mbox{\hyperlink{classns__pretab_1_1ns__priv_1_1_tab_data_model_a90dfe1630b0bdd13344949208d1ea7d5}{set\+Header}} (std\+::size\+\_\+t column, const std\+::string header)
+\begin{DoxyCompactList}\small\item\em Set the Header at \textquotesingle{}column\textquotesingle{}. \end{DoxyCompactList}\item 
+const Tab\+Align \& \mbox{\hyperlink{classns__pretab_1_1ns__priv_1_1_tab_data_model_a60065be0438f7c4125cf5cfb677da447}{align\+At}} (std\+::size\+\_\+t column) const
+\begin{DoxyCompactList}\small\item\em get the align at \textquotesingle{}column\textquotesingle{} \end{DoxyCompactList}\item 
+\mbox{\hyperlink{classns__pretab_1_1ns__priv_1_1_tab_data_model}{Tab\+Data\+Model}} \& \mbox{\hyperlink{classns__pretab_1_1ns__priv_1_1_tab_data_model_aeef31fc8de09068dd96deda6cb1cefbf}{set\+Align}} (std\+::size\+\_\+t column, Tab\+Align align)
+\begin{DoxyCompactList}\small\item\em Set the Align at \textquotesingle{}column\textquotesingle{}. \end{DoxyCompactList}\item 
+\mbox{\hyperlink{classns__pretab_1_1ns__priv_1_1_tab_data_model}{Tab\+Data\+Model}} \& \mbox{\hyperlink{classns__pretab_1_1ns__priv_1_1_tab_data_model_afedfc7abdb55b458625ba92b2bad3704}{set\+Align}} (Tab\+Align align)
+\begin{DoxyCompactList}\small\item\em Set the Align for all columns. \end{DoxyCompactList}\item 
+const std\+::size\+\_\+t \& \mbox{\hyperlink{classns__pretab_1_1ns__priv_1_1_tab_data_model_a9167f9048ec65dc7a82b45c5e8763b03}{precision\+At}} (std\+::size\+\_\+t column) const
+\begin{DoxyCompactList}\small\item\em get the precision at \textquotesingle{}column\textquotesingle{} \end{DoxyCompactList}\item 
+\mbox{\hyperlink{classns__pretab_1_1ns__priv_1_1_tab_data_model}{Tab\+Data\+Model}} \& \mbox{\hyperlink{classns__pretab_1_1ns__priv_1_1_tab_data_model_a53503b181063e9cb3c653c6264fef32b}{set\+Precision}} (std\+::size\+\_\+t column, std\+::size\+\_\+t precision)
+\begin{DoxyCompactList}\small\item\em Set the Precision at \textquotesingle{}column\textquotesingle{}. \end{DoxyCompactList}\item 
+\mbox{\hyperlink{classns__pretab_1_1ns__priv_1_1_tab_data_model}{Tab\+Data\+Model}} \& \mbox{\hyperlink{classns__pretab_1_1ns__priv_1_1_tab_data_model_afd191849741f87614f21dd96d31dbb7b}{set\+Precision}} (std\+::size\+\_\+t precision)
+\begin{DoxyCompactList}\small\item\em Set the Precision for all columns. \end{DoxyCompactList}\item 
+{\footnotesize template$<$typename Item\+Type $>$ }\\\mbox{\hyperlink{classns__pretab_1_1ns__priv_1_1_tab_data_model}{Tab\+Data\+Model}} \& \mbox{\hyperlink{classns__pretab_1_1ns__priv_1_1_tab_data_model_a0d43c777ec546aca112c358546eb1de6}{set\+Item}} (const Item\+Type \&item, std\+::size\+\_\+t row, std\+::size\+\_\+t column)
+\begin{DoxyCompactList}\small\item\em Set the Item at \mbox{[}row, column\mbox{]}. \end{DoxyCompactList}\item 
+{\footnotesize template$<$typename... Argvs\+Type$>$ }\\\mbox{\hyperlink{classns__pretab_1_1ns__priv_1_1_tab_data_model}{Tab\+Data\+Model}} \& \mbox{\hyperlink{classns__pretab_1_1ns__priv_1_1_tab_data_model_a45549683769ff4021eb95c623b5d902f}{append\+Row}} (const Argvs\+Type \&...argvs)
+\begin{DoxyCompactList}\small\item\em add a row to the end of the table \end{DoxyCompactList}\item 
+\mbox{\hyperlink{classns__pretab_1_1ns__priv_1_1_tab_data_model}{Tab\+Data\+Model}} \& \mbox{\hyperlink{classns__pretab_1_1ns__priv_1_1_tab_data_model_af388f09143ed51c3f3590a4dd5862eb8}{append\+Column}} (const std\+::string \&header, Tab\+Align align=Tab\+Align\+::\+C\+E\+N\+T\+ER, std\+::size\+\_\+t precision=1)
+\begin{DoxyCompactList}\small\item\em add a column to the end of the table \end{DoxyCompactList}\end{DoxyCompactItemize}
+\doxysubsection*{Protected Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\Hypertarget{classns__pretab_1_1ns__priv_1_1_tab_data_model_a8647a48f230d34013ce6623cf6c24db6}\label{classns__pretab_1_1ns__priv_1_1_tab_data_model_a8647a48f230d34013ce6623cf6c24db6}} 
+{\footnotesize template$<$typename Argv\+Type , typename... Argvs\+Type$>$ }\\\mbox{\hyperlink{classns__pretab_1_1ns__priv_1_1_tab_data_model}{Tab\+Data\+Model}} \& \mbox{\hyperlink{classns__pretab_1_1ns__priv_1_1_tab_data_model_a8647a48f230d34013ce6623cf6c24db6}{\+\_\+\+\_\+append\+Row\+\_\+\+\_\+}} (std\+::size\+\_\+t column\+Index, const Argv\+Type \&argv, const Argvs\+Type \&...argvs)
+\begin{DoxyCompactList}\small\item\em help function \end{DoxyCompactList}\item 
+\mbox{\Hypertarget{classns__pretab_1_1ns__priv_1_1_tab_data_model_a114f4b7fee011adcf7946fbb0f4888a3}\label{classns__pretab_1_1ns__priv_1_1_tab_data_model_a114f4b7fee011adcf7946fbb0f4888a3}} 
+\mbox{\hyperlink{classns__pretab_1_1ns__priv_1_1_tab_data_model}{Tab\+Data\+Model}} \& \mbox{\hyperlink{classns__pretab_1_1ns__priv_1_1_tab_data_model_a114f4b7fee011adcf7946fbb0f4888a3}{\+\_\+\+\_\+append\+Row\+\_\+\+\_\+}} (std\+::size\+\_\+t column\+Index)
+\begin{DoxyCompactList}\small\item\em help function \end{DoxyCompactList}\item 
+\mbox{\Hypertarget{classns__pretab_1_1ns__priv_1_1_tab_data_model_a2e1ffad060ef56de50363a343508e84c}\label{classns__pretab_1_1ns__priv_1_1_tab_data_model_a2e1ffad060ef56de50363a343508e84c}} 
+const \mbox{\hyperlink{classns__pretab_1_1ns__priv_1_1_tab_column}{Tab\+Column}} \& {\bfseries column\+At} (std\+::size\+\_\+t column) const
+\item 
+const std\+::string \& \mbox{\hyperlink{classns__pretab_1_1ns__priv_1_1_tab_data_model_a8485ae792dd2b23f82fc361afcc929fa}{item\+At}} (std\+::size\+\_\+t row, std\+::size\+\_\+t column) const
+\begin{DoxyCompactList}\small\item\em get the item at \mbox{[}row, column\mbox{]} \end{DoxyCompactList}\end{DoxyCompactItemize}
+\doxysubsection*{Protected Attributes}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\Hypertarget{classns__pretab_1_1ns__priv_1_1_tab_data_model_a181133a0a9bd02824074055d9725507e}\label{classns__pretab_1_1ns__priv_1_1_tab_data_model_a181133a0a9bd02824074055d9725507e}} 
+std\+::vector$<$ \mbox{\hyperlink{classns__pretab_1_1ns__priv_1_1_tab_column}{Tab\+Column}} $>$ {\bfseries \+\_\+data}
+\end{DoxyCompactItemize}
+
+
+\doxysubsection{Constructor \& Destructor Documentation}
+\mbox{\Hypertarget{classns__pretab_1_1ns__priv_1_1_tab_data_model_a30102d3e44420571b87941a2c20795c2}\label{classns__pretab_1_1ns__priv_1_1_tab_data_model_a30102d3e44420571b87941a2c20795c2}} 
+\index{ns\_pretab::ns\_priv::TabDataModel@{ns\_pretab::ns\_priv::TabDataModel}!TabDataModel@{TabDataModel}}
+\index{TabDataModel@{TabDataModel}!ns\_pretab::ns\_priv::TabDataModel@{ns\_pretab::ns\_priv::TabDataModel}}
+\doxysubsubsection{\texorpdfstring{TabDataModel()}{TabDataModel()}}
+{\footnotesize\ttfamily ns\+\_\+pretab\+::ns\+\_\+priv\+::\+Tab\+Data\+Model\+::\+Tab\+Data\+Model (\begin{DoxyParamCaption}\item[{const std\+::vector$<$ std\+::string $>$ \&}]{headers }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}}
+
+
+
+Construct a new \mbox{\hyperlink{classns__pretab_1_1ns__priv_1_1_tab_data_model}{Tab\+Data\+Model}} object. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em headers} & the header labels for the table \\
+\hline
+\end{DoxyParams}
+
+
+\doxysubsection{Member Function Documentation}
+\mbox{\Hypertarget{classns__pretab_1_1ns__priv_1_1_tab_data_model_a60065be0438f7c4125cf5cfb677da447}\label{classns__pretab_1_1ns__priv_1_1_tab_data_model_a60065be0438f7c4125cf5cfb677da447}} 
+\index{ns\_pretab::ns\_priv::TabDataModel@{ns\_pretab::ns\_priv::TabDataModel}!alignAt@{alignAt}}
+\index{alignAt@{alignAt}!ns\_pretab::ns\_priv::TabDataModel@{ns\_pretab::ns\_priv::TabDataModel}}
+\doxysubsubsection{\texorpdfstring{alignAt()}{alignAt()}}
+{\footnotesize\ttfamily const Tab\+Align\& ns\+\_\+pretab\+::ns\+\_\+priv\+::\+Tab\+Data\+Model\+::align\+At (\begin{DoxyParamCaption}\item[{std\+::size\+\_\+t}]{column }\end{DoxyParamCaption}) const\hspace{0.3cm}{\ttfamily [inline]}}
+
+
+
+get the align at \textquotesingle{}column\textquotesingle{} 
+
+
+\begin{DoxyParams}{Parameters}
+{\em column} & \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+Tab\+Align\& 
+\end{DoxyReturn}
+\mbox{\Hypertarget{classns__pretab_1_1ns__priv_1_1_tab_data_model_af388f09143ed51c3f3590a4dd5862eb8}\label{classns__pretab_1_1ns__priv_1_1_tab_data_model_af388f09143ed51c3f3590a4dd5862eb8}} 
+\index{ns\_pretab::ns\_priv::TabDataModel@{ns\_pretab::ns\_priv::TabDataModel}!appendColumn@{appendColumn}}
+\index{appendColumn@{appendColumn}!ns\_pretab::ns\_priv::TabDataModel@{ns\_pretab::ns\_priv::TabDataModel}}
+\doxysubsubsection{\texorpdfstring{appendColumn()}{appendColumn()}}
+{\footnotesize\ttfamily \mbox{\hyperlink{classns__pretab_1_1ns__priv_1_1_tab_data_model}{Tab\+Data\+Model}}\& ns\+\_\+pretab\+::ns\+\_\+priv\+::\+Tab\+Data\+Model\+::append\+Column (\begin{DoxyParamCaption}\item[{const std\+::string \&}]{header,  }\item[{Tab\+Align}]{align = {\ttfamily TabAlign\+:\+:CENTER},  }\item[{std\+::size\+\_\+t}]{precision = {\ttfamily 1} }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}}
+
+
+
+add a column to the end of the table 
+
+\begin{DoxyReturn}{Returns}
+\mbox{\hyperlink{classns__pretab_1_1ns__priv_1_1_tab_data_model}{Tab\+Data\+Model}}\& 
+\end{DoxyReturn}
+\mbox{\Hypertarget{classns__pretab_1_1ns__priv_1_1_tab_data_model_a45549683769ff4021eb95c623b5d902f}\label{classns__pretab_1_1ns__priv_1_1_tab_data_model_a45549683769ff4021eb95c623b5d902f}} 
+\index{ns\_pretab::ns\_priv::TabDataModel@{ns\_pretab::ns\_priv::TabDataModel}!appendRow@{appendRow}}
+\index{appendRow@{appendRow}!ns\_pretab::ns\_priv::TabDataModel@{ns\_pretab::ns\_priv::TabDataModel}}
+\doxysubsubsection{\texorpdfstring{appendRow()}{appendRow()}}
+{\footnotesize\ttfamily template$<$typename... Argvs\+Type$>$ \\
+\mbox{\hyperlink{classns__pretab_1_1ns__priv_1_1_tab_data_model}{Tab\+Data\+Model}}\& ns\+\_\+pretab\+::ns\+\_\+priv\+::\+Tab\+Data\+Model\+::append\+Row (\begin{DoxyParamCaption}\item[{const Argvs\+Type \&...}]{argvs }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}}
+
+
+
+add a row to the end of the table 
+
+
+\begin{DoxyTemplParams}{Template Parameters}
+{\em Argvs\+Type} & the types of the argvs \\
+\hline
+\end{DoxyTemplParams}
+
+\begin{DoxyParams}{Parameters}
+{\em argvs} & the arguements \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+\mbox{\hyperlink{classns__pretab_1_1ns__priv_1_1_tab_data_model}{Tab\+Data\+Model}}\& 
+\end{DoxyReturn}
+\mbox{\Hypertarget{classns__pretab_1_1ns__priv_1_1_tab_data_model_afb05a6a7423e0ac03814e1e300700e06}\label{classns__pretab_1_1ns__priv_1_1_tab_data_model_afb05a6a7423e0ac03814e1e300700e06}} 
+\index{ns\_pretab::ns\_priv::TabDataModel@{ns\_pretab::ns\_priv::TabDataModel}!columnCount@{columnCount}}
+\index{columnCount@{columnCount}!ns\_pretab::ns\_priv::TabDataModel@{ns\_pretab::ns\_priv::TabDataModel}}
+\doxysubsubsection{\texorpdfstring{columnCount()}{columnCount()}}
+{\footnotesize\ttfamily std\+::size\+\_\+t ns\+\_\+pretab\+::ns\+\_\+priv\+::\+Tab\+Data\+Model\+::column\+Count (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption}) const\hspace{0.3cm}{\ttfamily [inline]}}
+
+
+
+the column count 
+
+\begin{DoxyReturn}{Returns}
+std\+::size\+\_\+t 
+\end{DoxyReturn}
+\mbox{\Hypertarget{classns__pretab_1_1ns__priv_1_1_tab_data_model_a440dc9e7a8fb9db759fbb297c90e875e}\label{classns__pretab_1_1ns__priv_1_1_tab_data_model_a440dc9e7a8fb9db759fbb297c90e875e}} 
+\index{ns\_pretab::ns\_priv::TabDataModel@{ns\_pretab::ns\_priv::TabDataModel}!empty@{empty}}
+\index{empty@{empty}!ns\_pretab::ns\_priv::TabDataModel@{ns\_pretab::ns\_priv::TabDataModel}}
+\doxysubsubsection{\texorpdfstring{empty()}{empty()}}
+{\footnotesize\ttfamily bool ns\+\_\+pretab\+::ns\+\_\+priv\+::\+Tab\+Data\+Model\+::empty (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption}) const\hspace{0.3cm}{\ttfamily [inline]}}
+
+
+
+is the table empty 
+
+\begin{DoxyReturn}{Returns}
+true 
+
+false 
+\end{DoxyReturn}
+\mbox{\Hypertarget{classns__pretab_1_1ns__priv_1_1_tab_data_model_a0f04c782e5c7023927fec1d93872c3ac}\label{classns__pretab_1_1ns__priv_1_1_tab_data_model_a0f04c782e5c7023927fec1d93872c3ac}} 
+\index{ns\_pretab::ns\_priv::TabDataModel@{ns\_pretab::ns\_priv::TabDataModel}!headerAt@{headerAt}}
+\index{headerAt@{headerAt}!ns\_pretab::ns\_priv::TabDataModel@{ns\_pretab::ns\_priv::TabDataModel}}
+\doxysubsubsection{\texorpdfstring{headerAt()}{headerAt()}}
+{\footnotesize\ttfamily const std\+::string\& ns\+\_\+pretab\+::ns\+\_\+priv\+::\+Tab\+Data\+Model\+::header\+At (\begin{DoxyParamCaption}\item[{std\+::size\+\_\+t}]{column }\end{DoxyParamCaption}) const\hspace{0.3cm}{\ttfamily [inline]}}
+
+
+
+get the header label at \textquotesingle{}column\textquotesingle{} 
+
+
+\begin{DoxyParams}{Parameters}
+{\em column} & \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+std\+::string\& 
+\end{DoxyReturn}
+\mbox{\Hypertarget{classns__pretab_1_1ns__priv_1_1_tab_data_model_a8485ae792dd2b23f82fc361afcc929fa}\label{classns__pretab_1_1ns__priv_1_1_tab_data_model_a8485ae792dd2b23f82fc361afcc929fa}} 
+\index{ns\_pretab::ns\_priv::TabDataModel@{ns\_pretab::ns\_priv::TabDataModel}!itemAt@{itemAt}}
+\index{itemAt@{itemAt}!ns\_pretab::ns\_priv::TabDataModel@{ns\_pretab::ns\_priv::TabDataModel}}
+\doxysubsubsection{\texorpdfstring{itemAt()}{itemAt()}}
+{\footnotesize\ttfamily const std\+::string\& ns\+\_\+pretab\+::ns\+\_\+priv\+::\+Tab\+Data\+Model\+::item\+At (\begin{DoxyParamCaption}\item[{std\+::size\+\_\+t}]{row,  }\item[{std\+::size\+\_\+t}]{column }\end{DoxyParamCaption}) const\hspace{0.3cm}{\ttfamily [inline]}, {\ttfamily [protected]}}
+
+
+
+get the item at \mbox{[}row, column\mbox{]} 
+
+
+\begin{DoxyParams}{Parameters}
+{\em row} & \\
+\hline
+{\em column} & \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+std\+::string\& 
+\end{DoxyReturn}
+\mbox{\Hypertarget{classns__pretab_1_1ns__priv_1_1_tab_data_model_a9167f9048ec65dc7a82b45c5e8763b03}\label{classns__pretab_1_1ns__priv_1_1_tab_data_model_a9167f9048ec65dc7a82b45c5e8763b03}} 
+\index{ns\_pretab::ns\_priv::TabDataModel@{ns\_pretab::ns\_priv::TabDataModel}!precisionAt@{precisionAt}}
+\index{precisionAt@{precisionAt}!ns\_pretab::ns\_priv::TabDataModel@{ns\_pretab::ns\_priv::TabDataModel}}
+\doxysubsubsection{\texorpdfstring{precisionAt()}{precisionAt()}}
+{\footnotesize\ttfamily const std\+::size\+\_\+t\& ns\+\_\+pretab\+::ns\+\_\+priv\+::\+Tab\+Data\+Model\+::precision\+At (\begin{DoxyParamCaption}\item[{std\+::size\+\_\+t}]{column }\end{DoxyParamCaption}) const\hspace{0.3cm}{\ttfamily [inline]}}
+
+
+
+get the precision at \textquotesingle{}column\textquotesingle{} 
+
+\begin{DoxyReturn}{Returns}
+std\+::size\+\_\+t\& 
+\end{DoxyReturn}
+\mbox{\Hypertarget{classns__pretab_1_1ns__priv_1_1_tab_data_model_abee660449c2f61c276978aabc66b53fe}\label{classns__pretab_1_1ns__priv_1_1_tab_data_model_abee660449c2f61c276978aabc66b53fe}} 
+\index{ns\_pretab::ns\_priv::TabDataModel@{ns\_pretab::ns\_priv::TabDataModel}!rowCount@{rowCount}}
+\index{rowCount@{rowCount}!ns\_pretab::ns\_priv::TabDataModel@{ns\_pretab::ns\_priv::TabDataModel}}
+\doxysubsubsection{\texorpdfstring{rowCount()}{rowCount()}}
+{\footnotesize\ttfamily std\+::size\+\_\+t ns\+\_\+pretab\+::ns\+\_\+priv\+::\+Tab\+Data\+Model\+::row\+Count (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption}) const\hspace{0.3cm}{\ttfamily [inline]}}
+
+
+
+the row count 
+
+\begin{DoxyReturn}{Returns}
+std\+::size\+\_\+t 
+\end{DoxyReturn}
+\mbox{\Hypertarget{classns__pretab_1_1ns__priv_1_1_tab_data_model_aeef31fc8de09068dd96deda6cb1cefbf}\label{classns__pretab_1_1ns__priv_1_1_tab_data_model_aeef31fc8de09068dd96deda6cb1cefbf}} 
+\index{ns\_pretab::ns\_priv::TabDataModel@{ns\_pretab::ns\_priv::TabDataModel}!setAlign@{setAlign}}
+\index{setAlign@{setAlign}!ns\_pretab::ns\_priv::TabDataModel@{ns\_pretab::ns\_priv::TabDataModel}}
+\doxysubsubsection{\texorpdfstring{setAlign()}{setAlign()}\hspace{0.1cm}{\footnotesize\ttfamily [1/2]}}
+{\footnotesize\ttfamily \mbox{\hyperlink{classns__pretab_1_1ns__priv_1_1_tab_data_model}{Tab\+Data\+Model}}\& ns\+\_\+pretab\+::ns\+\_\+priv\+::\+Tab\+Data\+Model\+::set\+Align (\begin{DoxyParamCaption}\item[{std\+::size\+\_\+t}]{column,  }\item[{Tab\+Align}]{align }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}}
+
+
+
+Set the Align at \textquotesingle{}column\textquotesingle{}. 
+
+\begin{DoxyReturn}{Returns}
+\mbox{\hyperlink{classns__pretab_1_1ns__priv_1_1_tab_data_model}{Tab\+Data\+Model}}\& 
+\end{DoxyReturn}
+\mbox{\Hypertarget{classns__pretab_1_1ns__priv_1_1_tab_data_model_afedfc7abdb55b458625ba92b2bad3704}\label{classns__pretab_1_1ns__priv_1_1_tab_data_model_afedfc7abdb55b458625ba92b2bad3704}} 
+\index{ns\_pretab::ns\_priv::TabDataModel@{ns\_pretab::ns\_priv::TabDataModel}!setAlign@{setAlign}}
+\index{setAlign@{setAlign}!ns\_pretab::ns\_priv::TabDataModel@{ns\_pretab::ns\_priv::TabDataModel}}
+\doxysubsubsection{\texorpdfstring{setAlign()}{setAlign()}\hspace{0.1cm}{\footnotesize\ttfamily [2/2]}}
+{\footnotesize\ttfamily \mbox{\hyperlink{classns__pretab_1_1ns__priv_1_1_tab_data_model}{Tab\+Data\+Model}}\& ns\+\_\+pretab\+::ns\+\_\+priv\+::\+Tab\+Data\+Model\+::set\+Align (\begin{DoxyParamCaption}\item[{Tab\+Align}]{align }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}}
+
+
+
+Set the Align for all columns. 
+
+\begin{DoxyReturn}{Returns}
+\mbox{\hyperlink{classns__pretab_1_1ns__priv_1_1_tab_data_model}{Tab\+Data\+Model}}\& 
+\end{DoxyReturn}
+\mbox{\Hypertarget{classns__pretab_1_1ns__priv_1_1_tab_data_model_a90dfe1630b0bdd13344949208d1ea7d5}\label{classns__pretab_1_1ns__priv_1_1_tab_data_model_a90dfe1630b0bdd13344949208d1ea7d5}} 
+\index{ns\_pretab::ns\_priv::TabDataModel@{ns\_pretab::ns\_priv::TabDataModel}!setHeader@{setHeader}}
+\index{setHeader@{setHeader}!ns\_pretab::ns\_priv::TabDataModel@{ns\_pretab::ns\_priv::TabDataModel}}
+\doxysubsubsection{\texorpdfstring{setHeader()}{setHeader()}}
+{\footnotesize\ttfamily \mbox{\hyperlink{classns__pretab_1_1ns__priv_1_1_tab_data_model}{Tab\+Data\+Model}}\& ns\+\_\+pretab\+::ns\+\_\+priv\+::\+Tab\+Data\+Model\+::set\+Header (\begin{DoxyParamCaption}\item[{std\+::size\+\_\+t}]{column,  }\item[{const std\+::string}]{header }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}}
+
+
+
+Set the Header at \textquotesingle{}column\textquotesingle{}. 
+
+\begin{DoxyReturn}{Returns}
+\mbox{\hyperlink{classns__pretab_1_1ns__priv_1_1_tab_data_model}{Tab\+Data\+Model}}\& 
+\end{DoxyReturn}
+\mbox{\Hypertarget{classns__pretab_1_1ns__priv_1_1_tab_data_model_a0d43c777ec546aca112c358546eb1de6}\label{classns__pretab_1_1ns__priv_1_1_tab_data_model_a0d43c777ec546aca112c358546eb1de6}} 
+\index{ns\_pretab::ns\_priv::TabDataModel@{ns\_pretab::ns\_priv::TabDataModel}!setItem@{setItem}}
+\index{setItem@{setItem}!ns\_pretab::ns\_priv::TabDataModel@{ns\_pretab::ns\_priv::TabDataModel}}
+\doxysubsubsection{\texorpdfstring{setItem()}{setItem()}}
+{\footnotesize\ttfamily template$<$typename Item\+Type $>$ \\
+\mbox{\hyperlink{classns__pretab_1_1ns__priv_1_1_tab_data_model}{Tab\+Data\+Model}}\& ns\+\_\+pretab\+::ns\+\_\+priv\+::\+Tab\+Data\+Model\+::set\+Item (\begin{DoxyParamCaption}\item[{const Item\+Type \&}]{item,  }\item[{std\+::size\+\_\+t}]{row,  }\item[{std\+::size\+\_\+t}]{column }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}}
+
+
+
+Set the Item at \mbox{[}row, column\mbox{]}. 
+
+\begin{DoxyReturn}{Returns}
+\mbox{\hyperlink{classns__pretab_1_1ns__priv_1_1_tab_data_model}{Tab\+Data\+Model}}\& 
+\end{DoxyReturn}
+\mbox{\Hypertarget{classns__pretab_1_1ns__priv_1_1_tab_data_model_a53503b181063e9cb3c653c6264fef32b}\label{classns__pretab_1_1ns__priv_1_1_tab_data_model_a53503b181063e9cb3c653c6264fef32b}} 
+\index{ns\_pretab::ns\_priv::TabDataModel@{ns\_pretab::ns\_priv::TabDataModel}!setPrecision@{setPrecision}}
+\index{setPrecision@{setPrecision}!ns\_pretab::ns\_priv::TabDataModel@{ns\_pretab::ns\_priv::TabDataModel}}
+\doxysubsubsection{\texorpdfstring{setPrecision()}{setPrecision()}\hspace{0.1cm}{\footnotesize\ttfamily [1/2]}}
+{\footnotesize\ttfamily \mbox{\hyperlink{classns__pretab_1_1ns__priv_1_1_tab_data_model}{Tab\+Data\+Model}}\& ns\+\_\+pretab\+::ns\+\_\+priv\+::\+Tab\+Data\+Model\+::set\+Precision (\begin{DoxyParamCaption}\item[{std\+::size\+\_\+t}]{column,  }\item[{std\+::size\+\_\+t}]{precision }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}}
+
+
+
+Set the Precision at \textquotesingle{}column\textquotesingle{}. 
+
+\begin{DoxyReturn}{Returns}
+\mbox{\hyperlink{classns__pretab_1_1ns__priv_1_1_tab_data_model}{Tab\+Data\+Model}}\& 
+\end{DoxyReturn}
+\mbox{\Hypertarget{classns__pretab_1_1ns__priv_1_1_tab_data_model_afd191849741f87614f21dd96d31dbb7b}\label{classns__pretab_1_1ns__priv_1_1_tab_data_model_afd191849741f87614f21dd96d31dbb7b}} 
+\index{ns\_pretab::ns\_priv::TabDataModel@{ns\_pretab::ns\_priv::TabDataModel}!setPrecision@{setPrecision}}
+\index{setPrecision@{setPrecision}!ns\_pretab::ns\_priv::TabDataModel@{ns\_pretab::ns\_priv::TabDataModel}}
+\doxysubsubsection{\texorpdfstring{setPrecision()}{setPrecision()}\hspace{0.1cm}{\footnotesize\ttfamily [2/2]}}
+{\footnotesize\ttfamily \mbox{\hyperlink{classns__pretab_1_1ns__priv_1_1_tab_data_model}{Tab\+Data\+Model}}\& ns\+\_\+pretab\+::ns\+\_\+priv\+::\+Tab\+Data\+Model\+::set\+Precision (\begin{DoxyParamCaption}\item[{std\+::size\+\_\+t}]{precision }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}}
+
+
+
+Set the Precision for all columns. 
+
+\begin{DoxyReturn}{Returns}
+\mbox{\hyperlink{classns__pretab_1_1ns__priv_1_1_tab_data_model}{Tab\+Data\+Model}}\& 
+\end{DoxyReturn}
+
+
+The documentation for this class was generated from the following file\+:\begin{DoxyCompactItemize}
+\item 
+/home/csl/\+Study\+C\+P\+P/artwork/pretty-\/table/include/prettytable.\+hpp\end{DoxyCompactItemize}
