@@ -6,23 +6,25 @@ skinparam DefaultFontName "Ubuntu Mono"
 enum TabAlign
 class std::list
 class TabColumn{
-    maxWidth : std::size_t
-    header : std::string
-    align : TabAlign
-    precision : std::size_t
+    - maxWidth : std::size_t
+    - header : std::string
+    - align : TabAlign
+    - precision : std::size_t
 }
 class TabDataModel{
-    data : std::vector<TabColumn>
+    - data : std::vector<TabColumn>
 }
 class PrettyTable
 
 TabColumn -left-|> std::list
 TabDataModel -left-* TabColumn
 
-PrettyTable -up-|> TabDataModel
+PrettyTable -up-|> TabDataModel : public >
 
-TabAlign : CENTER
-TabAlign : LEFT
-TabAlign : RIGHT
+enum TabAlign {
+    + CENTER
+    + LEFT
+    + RIGHT
+}
 
 @enduml
