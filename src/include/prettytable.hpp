@@ -12,7 +12,7 @@
 
 namespace ns_pretab {
 
-#define THROW_EXCEPTION(str) throw std::runtime_error(std::string("[ error from 'pretty-table' ] ") + str)
+#define THROW_EXCEPTION(str) throw std::runtime_error(std::string("[ error from 'pretty-table' ] ") + (str))
 
   enum class TabAlign {
     /**
@@ -40,7 +40,7 @@ namespace ns_pretab {
         break;
       }
       return os;
-    };
+    }
 
     /**
      * @brief the column data structure for a table
@@ -54,15 +54,15 @@ namespace ns_pretab {
       std::size_t _maxWidth;
       // the header label
       std::string _header;
-      // the align
+      // to align
       TabAlign _align;
       // the precision for float values
       std::size_t _precision;
 
     public:
-      TabColumn(const std::string &header,
-                TabAlign align = TabAlign::CENTER,
-                std::size_t precision = 1)
+      explicit TabColumn(const std::string &header,
+                         TabAlign align = TabAlign::CENTER,
+                         std::size_t precision = 1)
           : _header(header), _maxWidth(header.size()),
             std::vector<std::string>(), _align(align),
             _precision(precision) {}
@@ -77,10 +77,10 @@ namespace ns_pretab {
         if (item.size() > this->_maxWidth) {
           this->_maxWidth = item.size();
         }
-        return;
       }
 
 #pragma region attributes
+
       /**
        * @brief get header string
        *
@@ -132,13 +132,14 @@ namespace ns_pretab {
        */
       TabDataModel(const std::vector<std::string> &headers) {
         for (const auto &elem : headers) {
-          this->_data.push_back(TabColumn(elem));
+          this->_data.emplace_back(elem);
         }
       }
 
       TabDataModel() = default;
 
 #pragma region table state
+
       /**
        * @brief is the table empty
        *
@@ -170,9 +171,11 @@ namespace ns_pretab {
       std::size_t columnCount() const {
         return this->_data.size();
       }
+
 #pragma endregion
 
 #pragma region get and set for 'header' 'align' 'precision'
+
       /**
        * @brief get the header label at 'column'
        *
@@ -191,7 +194,7 @@ namespace ns_pretab {
        *
        * @return TabDataModel&
        */
-      TabDataModel &setHeader(std::size_t column, const std::string header) {
+      TabDataModel &setHeader(std::size_t column, const std::string &header) {
         if (column >= this->columnCount()) {
           THROW_EXCEPTION("the param 'column' is invalid in 'setHeader'");
         }
@@ -280,6 +283,7 @@ namespace ns_pretab {
 #pragma endregion
 
 #pragma region change data in the table
+
       /**
        * @brief Set the Item at [row, column]
        *
@@ -306,7 +310,7 @@ namespace ns_pretab {
        * @brief add a row to the end of the table
        *
        * @tparam ArgvsType the types of the argvs
-       * @param argvs the arguements
+       * @param argvs the arguments
        * @return TabDataModel&
        */
       template <typename... ArgvsType>
@@ -314,7 +318,7 @@ namespace ns_pretab {
         if (sizeof...(argvs) != this->columnCount()) {
           THROW_EXCEPTION("the count of 'argvs' is invalid in 'appendRow'");
         }
-        return this->__appendRow__(0, argvs...);
+        return this->_appendRow_(0, argvs...);
       }
 
       /**
@@ -325,10 +329,11 @@ namespace ns_pretab {
       TabDataModel &appendColumn(const std::string &header,
                                  TabAlign align = TabAlign::CENTER,
                                  std::size_t precision = 1) {
-        this->_data.push_back(TabColumn(header, align, precision));
+        this->_data.emplace_back(header, align, precision);
         this->_data.back().resize(this->rowCount());
         return *this;
       }
+
 #pragma endregion
 
 #pragma region help functions
@@ -337,17 +342,17 @@ namespace ns_pretab {
        * @brief help function
        */
       template <typename ArgvType, typename... ArgvsType>
-      TabDataModel &__appendRow__(std::size_t columnIndex, const ArgvType &argv, const ArgvsType &...argvs) {
+      TabDataModel &_appendRow_(std::size_t columnIndex, const ArgvType &argv, const ArgvsType &...argvs) {
         std::stringstream stream;
         stream << std::fixed << std::setprecision(this->precisionAt(columnIndex)) << argv;
         this->_data.at(columnIndex).push_back(stream.str());
-        return this->__appendRow__(columnIndex + 1, argvs...);
+        return this->_appendRow_(columnIndex + 1, argvs...);
       }
 
       /**
        * @brief help function
        */
-      TabDataModel &__appendRow__(std::size_t columnIndex) {
+      TabDataModel &_appendRow_(std::size_t columnIndex) {
         return *this;
       }
 
@@ -377,25 +382,26 @@ namespace ns_pretab {
 
   public:
     friend class ns_priv::TabPrinter;
+
     using TabDataModel::TabDataModel;
 
     /**
      * @brief translate the table to csv file format
      *
-     * @param splitor the splitor
+     * @param separator the separator
      * @return std::string
      */
-    std::string toCSV(char splitor = ',') const {
+    std::string toCSV(char separator = ',') const {
       std::stringstream stream;
       // print the headers
       for (int i = 0; i != this->columnCount() - 1; ++i) {
-        stream << this->_data.at(i).header() << splitor;
+        stream << this->_data.at(i).header() << separator;
       }
       stream << this->_data.back().header() << '\n';
       // print the data
       for (int i = 0; i != this->rowCount(); ++i) {
         for (int j = 0; j != this->columnCount() - 1; ++j) {
-          stream << this->itemAt(i, j) << splitor;
+          stream << this->itemAt(i, j) << separator;
         }
         stream << this->itemAt(i, this->columnCount() - 1) << '\n';
       }
@@ -403,16 +409,16 @@ namespace ns_pretab {
     }
 
     /**
-     * @brief load the csv file data to comstruct a table
+     * @brief load the csv file data to construct a table
      *
      * @param filename the name of csv file
      * @param columnCount the count of columns
      * @param withHeaders is the csv file with headers
-     * @param splitor the splitor
+     * @param separator the separator
      * @return PrettyTable
      */
     static PrettyTable fromCSV(const std::string &filename, std::size_t columnCount,
-                               std::size_t precision = 1, bool withHeaders = true, char splitor = ',') {
+                               std::size_t precision = 1, bool withHeaders = true, char separator = ',') {
       std::ifstream ifs(filename);
       if (!ifs.is_open()) {
         THROW_EXCEPTION("the csv file is not found in 'fromCSV'");
@@ -431,9 +437,9 @@ namespace ns_pretab {
         if (strLine.empty()) {
           return PrettyTable(std::vector<std::string>());
         } else {
-          headers = PrettyTable::split(strLine, splitor);
+          headers = PrettyTable::split(strLine, separator);
           for (int i = 0; i < columnCount - headers.size(); ++i) {
-            headers.push_back("No-Header");
+            headers.emplace_back("No-Header");
           }
         }
       }
@@ -441,7 +447,7 @@ namespace ns_pretab {
       PrettyTable tab(headers);
 
       while (std::getline(ifs, strLine)) {
-        auto items = PrettyTable::split(strLine, splitor);
+        auto items = PrettyTable::split(strLine, separator);
         for (int i = 0; i != std::min(items.size(), columnCount); ++i) {
           tab._data.at(i).push_back(items.at(i));
         }
@@ -503,7 +509,7 @@ namespace ns_pretab {
     std::string tableInfo() const {
       std::stringstream stream;
       stream << "{'rows': " << this->rowCount();
-      stream << ", 'colms': " << this->columnCount();
+      stream << ", 'cols': " << this->columnCount();
       stream << ", 'columns': [";
       for (int i = 0; i != this->columnCount(); ++i) {
         stream << this->columnAt(i).info();
@@ -517,19 +523,19 @@ namespace ns_pretab {
 
   protected:
     /**
-     * \brief a function to split a string to some string elements according the splitor
+     * \brief a function to split a string to some string elements according the separator
      * \param str the string to be splited
-     * \param splitor the splitor char
+     * \param separator the separator char
      * \param ignoreEmpty whether ignoring the empty string element or not
      * \return the splited string vector
      */
-    static std::vector<std::string> split(const std::string &str, char splitor, bool ignoreEmpty = true) {
+    static std::vector<std::string> split(const std::string &str, char separator, bool ignoreEmpty = true) {
       std::vector<std::string> vec;
       auto iter = str.cbegin();
       while (true) {
-        auto pos = std::find(iter, str.cend(), splitor);
+        auto pos = std::find(iter, str.cend(), separator);
         auto elem = std::string(iter, pos);
-        if ((!ignoreEmpty) || (ignoreEmpty && !elem.empty()))
+        if ((!ignoreEmpty) || !elem.empty())
           vec.push_back(elem);
         if (pos == str.cend())
           break;
@@ -545,43 +551,43 @@ namespace ns_pretab {
     public:
       TabPrinter() = default;
 
-      std::ostream &operator()(std::ostream &os, const PrettyTable &pretab) {
-        if (pretab.empty()) {
+      std::ostream &operator()(std::ostream &os, const PrettyTable &prettyTable) {
+        if (prettyTable.empty()) {
           return (*this)(os, PrettyTable({"empty"}));
         }
-        auto line = this->split_line(pretab);
+        auto line = ns_pretab::ns_priv::TabPrinter::split_line(prettyTable);
         os << line << std::endl;
-        this->print_head(os, pretab) << std::endl;
+        this->print_head(os, prettyTable) << std::endl;
         os << line << std::endl;
-        this->print_data(os, pretab, line);
+        this->print_data(os, prettyTable, line);
         return os;
       }
 
     protected:
-      std::string split_line(const PrettyTable &pretab) {
+      static std::string split_line(const PrettyTable &prettyTable) {
         std::stringstream stream;
         stream << '+';
-        for (int i = 0; i != pretab.columnCount(); ++i) {
-          stream << std::string(pretab.columnAt(i).maxWidth() + 2, '-') << '+';
+        for (int i = 0; i != prettyTable.columnCount(); ++i) {
+          stream << std::string(prettyTable.columnAt(i).maxWidth() + 2, '-') << '+';
         }
         return stream.str();
       }
 
-      std::ostream &print_head(std::ostream &os, const PrettyTable &pretab) {
+      std::ostream &print_head(std::ostream &os, const PrettyTable &prettyTable) {
         os << '|';
-        for (int i = 0; i != pretab.columnCount(); ++i) {
-          auto &colm = pretab.columnAt(i);
-          this->print_item(os, colm.header(), colm.maxWidth(), TabAlign::CENTER) << '|';
+        for (int i = 0; i != prettyTable.columnCount(); ++i) {
+          auto &column = prettyTable.columnAt(i);
+          this->print_item(os, column.header(), column.maxWidth(), TabAlign::CENTER) << '|';
         }
         return os;
       }
 
-      std::ostream &print_data(std::ostream &os, const PrettyTable &pretab, const std::string &line) {
-        for (int j = 0; j != pretab.rowCount(); ++j) {
+      std::ostream &print_data(std::ostream &os, const PrettyTable &prettyTable, const std::string &line) {
+        for (int j = 0; j != prettyTable.rowCount(); ++j) {
           os << '|';
-          for (int i = 0; i != pretab.columnCount(); ++i) {
-            auto &colm = pretab.columnAt(i);
-            this->print_item(os, colm.at(j), colm.maxWidth(), colm.align()) << '|';
+          for (int i = 0; i != prettyTable.columnCount(); ++i) {
+            auto &column = prettyTable.columnAt(i);
+            ns_pretab::ns_priv::TabPrinter::print_item(os, column.at(j), column.maxWidth(), column.align()) << '|';
           }
           os << '\n';
           os << line << '\n';
@@ -589,19 +595,19 @@ namespace ns_pretab {
         return os;
       }
 
-      std::ostream &print_item(std::ostream &os, const std::string &content, int colmWidth, TabAlign align) {
+      static std::ostream &print_item(std::ostream &os, const std::string &content, int columnWidth, TabAlign align) {
         os << ' ';
         switch (align) {
         case TabAlign::CENTER: {
-          int left_space = (colmWidth - content.size()) / 2;
-          int right_space = colmWidth - left_space - content.size();
+          int left_space = (columnWidth - content.size()) / 2;
+          int right_space = columnWidth - left_space - content.size();
           os << std::string(left_space, ' ') << content << std::string(right_space, ' ');
         } break;
         case TabAlign::LEFT: {
-          os << std::left << std::setw(colmWidth) << content;
+          os << std::left << std::setw(columnWidth) << content;
         } break;
         case TabAlign::RIGHT: {
-          os << std::right << std::setw(colmWidth) << content;
+          os << std::right << std::setw(columnWidth) << content;
         } break;
         }
         os << ' ';
@@ -613,11 +619,11 @@ namespace ns_pretab {
      * @brief output format for the pretty table
      *
      * @param os the ostream
-     * @param pretab the pretty table
+     * @param prettyTable the pretty table
      * @return std::ostream&
      */
-    static std::ostream &operator<<(std::ostream &os, const PrettyTable &pretab) {
-      return ns_priv::printer(os, pretab);
+    static std::ostream &operator<<(std::ostream &os, const PrettyTable &prettyTable) {
+      return ns_priv::printer(os, prettyTable);
     }
 
   } // namespace ns_priv
