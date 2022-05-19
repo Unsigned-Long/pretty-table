@@ -1,45 +1,74 @@
-#include "artwork/geometry/point.hpp"
+#include "artwork/csv/csv.h"
+#include "artwork/timer/timer.h"
 #include "include/prettytable.hpp"
+
+struct Info {
+private:
+  /**
+   * @brief the members
+   */
+  int _id;
+  std::string _name;
+  float _score;
+
+public:
+  /**
+   * @brief construct a new Info object
+   */
+  Info(const int &id, const std::string &name, const float &score)
+      : _id(id), _name(name), _score(score) {}
+
+  inline int &id() { return this->_id; }
+  inline const int &id() const { return this->_id; }
+
+  inline std::string &name() { return this->_name; }
+  inline const std::string &name() const { return this->_name; }
+
+  inline float &score() { return this->_score; }
+  inline const float &score() const { return this->_score; }
+};
+
+void example0() {
+  ns_pretab::PrettyTable tab(1);
+
+  tab.addGrid(0, 0, "libname").addGrid(0, 1, "github");
+  tab.addGrid(1, 0, "pretty-table").addGrid(1, 1, "https://github.com/Unsigned-Long/pretty-table.git");
+
+  std::cout << tab << std::endl;
+}
+
+void example1() {
+  ns_pretab::PrettyTable tab(1);
+
+  tab.addGrid(1, 1, "hello", ns_pretab::Align::CENTER, 2, 2);
+  tab.addGrid(0, 4, "world", ns_pretab::Align::CENTER, 2, 2);
+  tab.addGrid(2, 3, "pretty-table", ns_pretab::Align::CENTER, 1, 3);
+  tab.addGrid(0, 3, "Ubuntu", ns_pretab::Align::CENTER, 2, 1);
+  tab.addGrid(0, 0, "cpp", ns_pretab::Align::CENTER, 1, 2);
+  tab.addGrid(1, 0, "SGG", ns_pretab::Align::CENTER, 2, 1);
+  tab.addGrid(0, 2, "^-^", ns_pretab::Align::CENTER, 1, 1);
+
+  std::cout << tab << std::endl;
+}
+
+void example2() {
+  ns_pretab::PrettyTable tab(1);
+
+  auto [h, vec] = CSV_READ_FILE_H("../data/info.csv", ',', Info, int, std::string, float);
+  tab.addGrid(0, 0, h.at(0)).addGrid(0, 1, h.at(1)).addGrid(0, 2, h.at(2));
+  for (int i = 0; i != vec.size(); i++) {
+    auto &elem = vec.at(i);
+    tab.addGrid(i + 1, 0, elem.id()).addGrid(i + 1, 1, elem.name()).addGrid(i + 1, 2, elem.score());
+  }
+
+  std::cout << tab << std::endl;
+}
 
 int main(int argc, char const *argv[]) {
   try {
-    // create a table from a csv file 
-    auto tab = ns_pretab::PrettyTable::fromCSV("../data/info.csv", 3, 3);
-
-    // set aligns foe columns
-    tab.setAlign(1, ns_pretab::TabAlign::LEFT);
-    tab.setAlign(2, ns_pretab::TabAlign::RIGHT);
-
-    // output the table info
-    std::cout << tab.tableInfo() << std::endl;
-    // print the table
-    std::cout << tab << std::endl;
-
-    // define a table
-    ns_pretab::PrettyTable tab2({"id", "X", "Y", "Z"});
-    // some settings
-    tab2.setAlign(ns_pretab::TabAlign::RIGHT).setPrecision(3);
-
-    // add data
-    auto rps = ns_geo::RefPointSet3f::randomGenerator(9, 0.0f, 10.0f, 10.0f, 434.0f, 23.0f, 156.0f);
-    for (const auto &[id, rp] : rps) {
-      tab2.appendRow(id, rp.x(), rp.y(), rp.z());
-    }
-
-    //add a new column
-    tab2.appendColumn("distance", ns_pretab::TabAlign::RIGHT, 3);
-    for (int i = 0; i != rps.size(); ++i) {
-      tab2.setItem(ns_geo::distance(ns_geo::Point3f(0.0f, 0.0f, 0.0f), rps.at(i)), i, 4);
-    }
-
-    // some print work
-    std::cout << tab2.tableInfo() << std::endl;
-    std::cout << tab2 << std::endl;
-
-    // trans
-    std::cout << tab2.toCSV() << std::endl;
-    std::cout << tab2.toMarkDown() << std::endl;
-
+    example0();
+    example1();
+    example2();
   } catch (const std::exception &e) {
     std::cerr << e.what() << '\n';
   }

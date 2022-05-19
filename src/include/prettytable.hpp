@@ -6,626 +6,314 @@
 #include <iomanip>
 #include <iostream>
 #include <list>
+#include <map>
+#include <memory>
+#include <set>
 #include <sstream>
 #include <string>
 #include <vector>
 
 namespace ns_pretab {
+#define THROW_EXCEPTION(where, msg) \
+  throw std::runtime_error(std::string("[ error from 'lib-pretab':'") + #where + "' ] " + msg)
 
-#define THROW_EXCEPTION(str) throw std::runtime_error(std::string("[ error from 'pretty-table' ] ") + (str))
-
-  enum class TabAlign {
+  // Table grid alignment
+  enum Align : int {
     /**
      * @brief options
      */
-    RIGHT,
-    LEFT,
-    CENTER
+    RIGHT = 1 << 0,
+    LEFT = 1 << 1,
+    CENTER = 1 << 2
   };
 
-  namespace ns_priv {
-    /**
-     * @brief override operator '<<' for type 'TabAlign'
-     */
-    static std::ostream &operator<<(std::ostream &os, const TabAlign &obj) {
-      switch (obj) {
-      case TabAlign::RIGHT:
-        os << "right";
-        break;
-      case TabAlign::LEFT:
-        os << "left";
-        break;
-      case TabAlign::CENTER:
-        os << "center";
-        break;
-      }
-      return os;
+  /**
+   * @brief override operator '<<' for type 'Align'
+   */
+  static std::ostream &operator<<(std::ostream &os, const Align &obj) {
+    switch (obj) {
+    case Align::RIGHT:
+      os << "RIGHT";
+      break;
+    case Align::LEFT:
+      os << "LEFT";
+      break;
+    case Align::CENTER:
+      os << "CENTER";
+      break;
     }
+    return os;
+  };
 
+  struct Grid {
+    using Ptr = std::shared_ptr<Grid>;
+
+  private:
     /**
-     * @brief the column data structure for a table
+     * @brief the members
      */
-    class TabColumn : public std::vector<std::string> {
-    public:
-      friend class TabDataModel;
-
-    private:
-      // used when drawing the table
-      std::size_t _maxWidth;
-      // the header label
-      std::string _header;
-      // to align
-      TabAlign _align;
-      // the precision for float values
-      std::size_t _precision;
-
-    public:
-      explicit TabColumn(const std::string &header,
-                         TabAlign align = TabAlign::CENTER,
-                         std::size_t precision = 1)
-          : _header(header), _maxWidth(header.size()),
-            std::vector<std::string>(), _align(align),
-            _precision(precision) {}
-
-      /**
-       * @brief add a item at the end of the column
-       *
-       * @param item the item string
-       */
-      void push_back(const std::string &item) {
-        std::vector<std::string>::push_back(item);
-        if (item.size() > this->_maxWidth) {
-          this->_maxWidth = item.size();
-        }
-      }
-
-#pragma region attributes
-
-      /**
-       * @brief get header string
-       *
-       * @return const std::string&
-       */
-      const std::string &header() const {
-        return this->_header;
-      }
-
-      /**
-       * @brief get the align of this table column
-       *
-       * @return TabAlign
-       */
-      TabAlign align() const {
-        return this->_align;
-      }
-
-      std::size_t maxWidth() const {
-        return this->_maxWidth;
-      }
-
-      std::size_t precision() const {
-        return this->_precision;
-      }
-
-#pragma endregion
-
-      std::string info() const {
-        std::stringstream stream;
-        stream << "{'" << this->_header << "': " << this->_align << "}";
-        return stream.str();
-      }
-
-    private:
-      TabColumn() = delete;
-    };
-
-    class TabDataModel {
-    protected:
-      // the table data
-      std::vector<TabColumn> _data;
-
-    public:
-      /**
-       * @brief Construct a new TabDataModel object
-       *
-       * @param headers the header labels for the table
-       */
-      TabDataModel(const std::vector<std::string> &headers) {
-        for (const auto &elem : headers) {
-          this->_data.emplace_back(elem);
-        }
-      }
-
-      TabDataModel() = default;
-
-#pragma region table state
-
-      /**
-       * @brief is the table empty
-       *
-       * @return true
-       * @return false
-       */
-      bool empty() const {
-        return this->_data.empty();
-      }
-
-      /**
-       * @brief the row count
-       *
-       * @return std::size_t
-       */
-      std::size_t rowCount() const {
-        if (this->_data.empty()) {
-          return 0;
-        } else {
-          return this->_data.front().size();
-        }
-      }
-
-      /**
-       * @brief the column count
-       *
-       * @return std::size_t
-       */
-      std::size_t columnCount() const {
-        return this->_data.size();
-      }
-
-#pragma endregion
-
-#pragma region get and set for 'header' 'align' 'precision'
-
-      /**
-       * @brief get the header label at 'column'
-       *
-       * @param column
-       * @return std::string&
-       */
-      const std::string &headerAt(std::size_t column) const {
-        if (column >= this->columnCount()) {
-          THROW_EXCEPTION("the param 'column' is invalid in 'headerAt'");
-        }
-        return this->_data.at(column)._header;
-      }
-
-      /**
-       * @brief Set the Header at 'column'
-       *
-       * @return TabDataModel&
-       */
-      TabDataModel &setHeader(std::size_t column, const std::string &header) {
-        if (column >= this->columnCount()) {
-          THROW_EXCEPTION("the param 'column' is invalid in 'setHeader'");
-        }
-        this->_data.at(column)._header = header;
-        if (header.size() > this->_data.at(column)._maxWidth) {
-          this->_data.at(column)._maxWidth = header.size();
-        }
-        return *this;
-      }
-
-      /**
-       * @brief get the align at 'column'
-       *
-       * @param column
-       * @return TabAlign&
-       */
-      const TabAlign &alignAt(std::size_t column) const {
-        if (column >= this->columnCount()) {
-          THROW_EXCEPTION("the param 'column' is invalid in 'alignAt'");
-        }
-        return this->_data.at(column)._align;
-      }
-
-      /**
-       * @brief Set the Align at 'column'
-       *
-       * @return TabDataModel&
-       */
-      TabDataModel &setAlign(std::size_t column, TabAlign align) {
-        if (column >= this->columnCount()) {
-          THROW_EXCEPTION("the param 'column' is invalid in 'setAlign'");
-        }
-        this->_data.at(column)._align = align;
-        return *this;
-      }
-
-      /**
-       * @brief Set the Align for all columns
-       *
-       * @return TabDataModel&
-       */
-      TabDataModel &setAlign(TabAlign align) {
-        for (auto &elem : this->_data) {
-          elem._align = align;
-        }
-        return *this;
-      }
-
-      /**
-       * @brief get the precision at 'column'
-       *
-       * @return std::size_t&
-       */
-      const std::size_t &precisionAt(std::size_t column) const {
-        if (column >= this->columnCount()) {
-          THROW_EXCEPTION("the param 'column' is invalid in 'precisionAt'");
-        }
-        return this->_data.at(column)._precision;
-      }
-
-      /**
-       * @brief Set the Precision at 'column'
-       *
-       * @return TabDataModel&
-       */
-      TabDataModel &setPrecision(std::size_t column, std::size_t precision) {
-        if (column >= this->columnCount()) {
-          THROW_EXCEPTION("the param 'column' is invalid in 'setPrecision'");
-        }
-        this->_data.at(column)._precision = precision;
-        return *this;
-      }
-
-      /**
-       * @brief Set the Precision for all columns
-       *
-       * @return TabDataModel&
-       */
-      TabDataModel &setPrecision(std::size_t precision) {
-        for (auto &elem : this->_data) {
-          elem._precision = precision;
-        }
-        return *this;
-      }
-
-#pragma endregion
-
-#pragma region change data in the table
-
-      /**
-       * @brief Set the Item at [row, column]
-       *
-       * @return TabDataModel&
-       */
-      template <typename ItemType>
-      TabDataModel &setItem(const ItemType &item, std::size_t row, std::size_t column) {
-        if (row >= this->rowCount()) {
-          THROW_EXCEPTION("the param 'row' is invalid in 'setItem'");
-        }
-        if (column >= this->columnCount()) {
-          THROW_EXCEPTION("the param 'column' is invalid in 'setItem'");
-        }
-        std::stringstream stream;
-        stream << std::fixed << std::setprecision(this->_data.at(column)._precision) << item;
-        this->_data.at(column).at(row) = stream.str();
-        if (stream.str().size() > this->_data.at(column)._maxWidth) {
-          this->_data.at(column)._maxWidth = stream.str().size();
-        }
-        return *this;
-      }
-
-      /**
-       * @brief add a row to the end of the table
-       *
-       * @tparam ArgvsType the types of the argvs
-       * @param argvs the arguments
-       * @return TabDataModel&
-       */
-      template <typename... ArgvsType>
-      TabDataModel &appendRow(const ArgvsType &...argvs) {
-        if (sizeof...(argvs) != this->columnCount()) {
-          THROW_EXCEPTION("the count of 'argvs' is invalid in 'appendRow'");
-        }
-        return this->_appendRow_(0, argvs...);
-      }
-
-      /**
-       * @brief add a column to the end of the table
-       *
-       * @return TabDataModel&
-       */
-      TabDataModel &appendColumn(const std::string &header,
-                                 TabAlign align = TabAlign::CENTER,
-                                 std::size_t precision = 1) {
-        this->_data.emplace_back(header, align, precision);
-        this->_data.back().resize(this->rowCount());
-        return *this;
-      }
-
-#pragma endregion
-
-#pragma region help functions
-    protected:
-      /**
-       * @brief help function
-       */
-      template <typename ArgvType, typename... ArgvsType>
-      TabDataModel &_appendRow_(std::size_t columnIndex, const ArgvType &argv, const ArgvsType &...argvs) {
-        std::stringstream stream;
-        stream << std::fixed << std::setprecision(this->precisionAt(columnIndex)) << argv;
-        this->_data.at(columnIndex).push_back(stream.str());
-        return this->_appendRow_(columnIndex + 1, argvs...);
-      }
-
-      /**
-       * @brief help function
-       */
-      TabDataModel &_appendRow_(std::size_t columnIndex) {
-        return *this;
-      }
-
-      const TabColumn &columnAt(std::size_t column) const {
-        return this->_data.at(column);
-      }
-
-      /**
-       * @brief get the item at [row, column]
-       *
-       * @param row
-       * @param column
-       * @return std::string&
-       */
-      const std::string &itemAt(std::size_t row, std::size_t column) const {
-        return this->_data.at(column).at(row);
-      }
-
-#pragma endregion
-    };
-
-    class TabPrinter;
-
-  } // namespace ns_priv
-
-  class PrettyTable : public ns_priv::TabDataModel {
+    // Grid stored string
+    std::string _str;
+    // Grid alignment
+    Align _align;
+    // Row number of grid
+    std::size_t _row;
+    // Column number of grid
+    std::size_t _col;
+    // Number of rows across the grid
+    std::size_t _rowspan;
+    // Number of columns across the grid
+    std::size_t _colspan;
 
   public:
-    friend class ns_priv::TabPrinter;
-
-    using TabDataModel::TabDataModel;
-
     /**
-     * @brief translate the table to csv file format
-     *
-     * @param separator the separator
-     * @return std::string
+     * @brief construct a new Grid object
      */
-    std::string toCSV(char separator = ',') const {
+    Grid(const std::string &str, const Align &align,
+         const std::size_t &row, const std::size_t &col,
+         const std::size_t &rowspan, const std::size_t &colspan)
+        : _str(str), _align(align),
+          _row(row), _col(col),
+          _rowspan(rowspan), _colspan(colspan) {}
+
+    inline std::string &str() { return this->_str; }
+    inline const std::string &str() const { return this->_str; }
+
+    inline Align &align() { return this->_align; }
+    inline const Align &align() const { return this->_align; }
+
+    inline std::size_t &row() { return this->_row; }
+    inline const std::size_t &row() const { return this->_row; }
+
+    inline std::size_t &col() { return this->_col; }
+    inline const std::size_t &col() const { return this->_col; }
+
+    inline std::size_t &rowspan() { return this->_rowspan; }
+    inline const std::size_t &rowspan() const { return this->_rowspan; }
+
+    inline std::size_t &colspan() { return this->_colspan; }
+    inline const std::size_t &colspan() const { return this->_colspan; }
+  };
+  /**
+   * @brief override operator '<<' for type 'Grid'
+   */
+  static std::ostream &operator<<(std::ostream &os, const Grid &obj) {
+    os << '{';
+    os << "'str': " << obj.str() << ", 'align': " << obj.align()
+       << ", 'row': " << obj.row() << ", 'col': " << obj.col()
+       << ", 'rowspan': " << obj.rowspan() << ", 'colspan': " << obj.colspan();
+    os << '}';
+    return os;
+  }
+
+  class PrettyTable;
+  static std::ostream &operator<<(std::ostream &os, const PrettyTable &tab);
+
+  class PrettyTable {
+    friend std::ostream &operator<<(std::ostream &os, const PrettyTable &tab);
+
+  private:
+  private:
+    // Store existing valid grids
+    std::vector<Grid::Ptr> _grids;
+    // Stores the width of each column of the table
+    std::vector<std::size_t> _colWidthVec;
+    // Number of rows to store the table
+    std::size_t _rowCount;
+    // Padding value of grid content
+    const std::size_t _padding;
+    // Records the grid used by the current table
+    std::map<std::size_t, std::set<std::size_t>> _usedGrid;
+
+  public:
+    /**
+     * @brief Construct a new Pretty Table object
+     */
+    PrettyTable(std::size_t padding = 1) : _grids(), _colWidthVec(), _rowCount(0), _padding(padding) {}
+
+    template <typename Type>
+    PrettyTable &addGrid(std::size_t row, std::size_t col, const Type &content,
+                         Align align = Align::LEFT, std::size_t rowspan = 1, std::size_t colspan = 1) {
+      // Converts an object to a string
       std::stringstream stream;
-      // print the headers
-      for (int i = 0; i != this->columnCount() - 1; ++i) {
-        stream << this->_data.at(i).header() << separator;
-      }
-      stream << this->_data.back().header() << '\n';
-      // print the data
-      for (int i = 0; i != this->rowCount(); ++i) {
-        for (int j = 0; j != this->columnCount() - 1; ++j) {
-          stream << this->itemAt(i, j) << separator;
-        }
-        stream << this->itemAt(i, this->columnCount() - 1) << '\n';
-      }
-      return stream.str();
-    }
+      stream << content;
+      std::string str;
+      stream >> str;
 
-    /**
-     * @brief load the csv file data to construct a table
-     *
-     * @param filename the name of csv file
-     * @param columnCount the count of columns
-     * @param withHeaders is the csv file with headers
-     * @param separator the separator
-     * @return PrettyTable
-     */
-    static PrettyTable fromCSV(const std::string &filename, std::size_t columnCount,
-                               std::size_t precision = 1, bool withHeaders = true, char separator = ',') {
-      std::ifstream ifs(filename);
-      if (!ifs.is_open()) {
-        THROW_EXCEPTION("the csv file is not found in 'fromCSV'");
+      // If the rowspan/colspan value setting is illegal, corresponding treatment shall be made.
+      if (rowspan < 1) {
+        rowspan = 1;
       }
-      std::vector<std::string> headers;
-      std::string strLine;
-      // organize the headers
-      if (!withHeaders) {
-        headers.resize(columnCount);
-        std::size_t columnIndex = 0;
-        for (auto &elem : headers) {
-          elem = "Column(" + std::to_string(columnIndex++) + ")";
-        }
-      } else {
-        std::getline(ifs, strLine);
-        if (strLine.empty()) {
-          return PrettyTable(std::vector<std::string>());
-        } else {
-          headers = PrettyTable::split(strLine, separator);
-          for (int i = 0; i < columnCount - headers.size(); ++i) {
-            headers.emplace_back("No-Header");
+      if (colspan < 1) {
+        colspan = 1;
+      }
+
+      // Judge whether the grid position to be added is occupied
+      for (int i = row; i != row + rowspan; ++i) {
+        for (int j = col; j != col + colspan; ++j) {
+          if (this->gridOccupied(i, j)) {
+            THROW_EXCEPTION(addGrid, "The grid at position (" + std::to_string(i) + ", " + std::to_string(j) +
+                                         ") is occupied. You cannot add a new grid here.");
           }
+          this->_usedGrid[i].insert(j);
         }
       }
-      // organize the data
-      PrettyTable tab(headers);
 
-      while (std::getline(ifs, strLine)) {
-        auto items = PrettyTable::split(strLine, separator);
-        for (int i = 0; i != std::min(items.size(), columnCount); ++i) {
-          tab._data.at(i).push_back(items.at(i));
-        }
-        for (int i = 0; i < columnCount - items.size(); ++i) {
-          tab._data.at(i + std::min(items.size(), columnCount)).push_back("No-Data");
-        }
-      }
-      ifs.close();
-      return tab;
-    }
+      // Add new grid
+      this->_grids.push_back(std::make_shared<Grid>(str, align, row, col, rowspan, colspan));
 
-    /**
-     * @brief translate the table to mark down format
-     *
-     * @return std::string
-     */
-    std::string toMarkDown() const {
-      std::stringstream stream;
-      // print headers
-      stream << '|';
-      for (int i = 0; i != this->columnCount(); ++i) {
-        stream << this->_data.at(i).header() << '|';
+      // If the number of rows is not enough, expand the number of rows
+      if (row + rowspan > this->rows()) {
+        this->_rowCount = row + rowspan;
       }
-      stream << "\n|";
-      // print split line
-      for (int i = 0; i != this->columnCount(); ++i) {
-        stream << "----|";
-      }
-      stream << '\n';
-      // print data
-      for (int i = 0; i != this->rowCount(); ++i) {
-        stream << '|';
-        for (int j = 0; j != this->columnCount(); ++j) {
-          stream << this->itemAt(i, j) << "|";
-        }
-        stream << "\n";
-      }
-      return stream.str();
-    }
 
-    /**
-     * @brief add a row at the end of the table
-     *
-     * @tparam ArgvsType
-     * @param argvs
-     * @return PrettyTable&
-     */
-    template <typename... ArgvsType>
-    PrettyTable &appendRow(const ArgvsType &...argvs) {
-      ns_priv::TabDataModel::appendRow(argvs...);
+      // If the number of cols is not enough, expand the number of cols
+      if (col + colspan > this->cols()) {
+        this->_colWidthVec.resize(col + colspan, 0);
+      }
+
+      // Adjust the content width of each column
+      std::size_t width = (colspan - 1) * (this->_padding * 2 + 1);
+      for (int i = 0; i != colspan; ++i) {
+        width += this->_colWidthVec.at(col + i);
+      }
+
+      // If the content cannot be placed, increase the width of the corresponding column
+      if (str.size() > width) {
+        std::size_t deta = (str.size() - width) / colspan;
+        for (int i = 0; i != colspan - 1; ++i) {
+          this->_colWidthVec.at(col + i) += deta;
+        }
+        this->_colWidthVec.at(col + colspan - 1) += str.size() - width - deta * (colspan - 1);
+      }
+
       return *this;
-    }
-
-    /**
-     * @brief print the table's info
-     *
-     * @return std::string
-     */
-    std::string tableInfo() const {
-      std::stringstream stream;
-      stream << "{'rows': " << this->rowCount();
-      stream << ", 'cols': " << this->columnCount();
-      stream << ", 'columns': [";
-      for (int i = 0; i != this->columnCount(); ++i) {
-        stream << this->columnAt(i).info();
-        if (i != this->columnCount() - 1)
-          stream << ", ";
-      }
-      stream << "]}";
-
-      return stream.str();
     }
 
   protected:
     /**
-     * \brief a function to split a string to some string elements according the separator
-     * \param str the string to be splited
-     * \param separator the separator char
-     * \param ignoreEmpty whether ignoring the empty string element or not
-     * \return the splited string vector
+     * @brief Gets the number of rows in the table
      */
-    static std::vector<std::string> split(const std::string &str, char separator, bool ignoreEmpty = true) {
-      std::vector<std::string> vec;
-      auto iter = str.cbegin();
-      while (true) {
-        auto pos = std::find(iter, str.cend(), separator);
-        auto elem = std::string(iter, pos);
-        if ((!ignoreEmpty) || !elem.empty())
-          vec.push_back(elem);
-        if (pos == str.cend())
-          break;
-        iter = ++pos;
+    std::size_t rows() const {
+      return this->_rowCount;
+    }
+    /**
+     * @brief Gets the number of columns in the table
+     */
+    std::size_t cols() const {
+      return this->_colWidthVec.size();
+    }
+    /**
+     * @brief Judge whether the table is empty
+     */
+    bool empty() const {
+      return this->rows() == 0 && this->cols() == 0;
+    }
+
+    /**
+     * @brief check whether the grid position to be added is occupied
+     */
+    bool gridOccupied(std::size_t r, std::size_t c) {
+      auto iter1 = this->_usedGrid.find(r);
+      if (iter1 == this->_usedGrid.cend()) {
+        return false;
       }
-      return vec;
+      auto iter2 = iter1->second.find(c);
+      if (iter2 == iter1->second.cend()) {
+        return false;
+      }
+      return true;
+    }
+
+    /**
+     * @brief Convert table to string for printing
+     */
+    std::string toString() const {
+      // If the form is empty, the empty form is printed
+      if (this->empty()) {
+        return PrettyTable().addGrid(0, 0, "empty").toString();
+      }
+
+      // Create two types of boundaries for tables
+      std::string line1("+"), line2("|");
+      for (const auto &elem : this->_colWidthVec) {
+        line1 += std::string(2 * this->_padding + elem, '-') + '+';
+        line2 += std::string(2 * this->_padding + elem, ' ') + '|';
+      }
+
+      // Initialize table string
+      std::string str(line1);
+      for (int i = 0; i != this->rows(); ++i) {
+        str += '\n' + line2;
+        str += '\n' + line1;
+      }
+
+      // For each grid, clear the content in the corresponding position
+      auto clear = [this, &str, &line1](std::size_t r, std::size_t c,
+                                        std::size_t rs, std::size_t cs) {
+        // Find the content in the corresponding location
+        std::size_t charStartRow = 2 * r + 1;
+        std::size_t charStartCol = 1;
+        for (int i = 0; i != c; ++i) {
+          charStartCol += 2 * this->_padding + 1 + this->_colWidthVec.at(i);
+        }
+        std::size_t charWidth = (cs - 1) * (this->_padding * 2 + 1) + 2 * this->_padding;
+        for (int i = c; i != c + cs; ++i) {
+          charWidth += this->_colWidthVec.at(i);
+        }
+        // Clear content
+        for (int i = 0; i != rs * 2 - 1; ++i) {
+          str.replace((charStartRow + i) * (line1.size() + 1) + charStartCol, charWidth, std::string(charWidth, ' '));
+        }
+      };
+
+      // For each grid, replace the contents of the corresponding position
+      auto replace = [this, &str, &line1](std::size_t r, std::size_t c,
+                                          std::size_t rs, std::size_t cs,
+                                          Align align, const std::string &s) {
+        // Find the content in the corresponding location
+        std::size_t charStartRow = 2 * r + rs;
+        std::size_t charStartCol = 1 + this->_padding;
+        for (int i = 0; i != c; ++i) {
+          charStartCol += 2 * this->_padding + 1 + this->_colWidthVec.at(i);
+        }
+        std::size_t charWidth = (cs - 1) * (this->_padding * 2 + 1);
+        for (int i = c; i != c + cs; ++i) {
+          charWidth += this->_colWidthVec.at(i);
+        }
+        std::string gridStr;
+        switch (align) {
+        case Align::RIGHT:
+          gridStr = std::string(charWidth - s.size(), ' ') + s;
+          break;
+        case Align::LEFT:
+          gridStr = s + std::string(charWidth - s.size(), ' ');
+          break;
+        case Align::CENTER:
+          std::size_t left = (charWidth - s.size()) / 2;
+          std::size_t right = charWidth - s.size() - left;
+          gridStr = std::string(left, ' ') + s + std::string(right, ' ');
+          break;
+        }
+        // replace content
+        str.replace(charStartRow * (line1.size() + 1) + charStartCol, charWidth, gridStr);
+      };
+
+      for (const auto &grid : this->_grids) {
+        auto r = grid->row(), c = grid->col();
+        auto rs = grid->rowspan(), cs = grid->colspan();
+        // Clear content
+        clear(r, c, rs, cs);
+        // replace content
+        replace(r, c, rs, cs, grid->align(), grid->str());
+      }
+
+      return str;
     }
   };
 
-  namespace ns_priv {
-
-    class TabPrinter {
-    public:
-      TabPrinter() = default;
-
-      std::ostream &operator()(std::ostream &os, const PrettyTable &prettyTable) {
-        if (prettyTable.empty()) {
-          return (*this)(os, PrettyTable({"empty"}));
-        }
-        auto line = ns_pretab::ns_priv::TabPrinter::split_line(prettyTable);
-        os << line << std::endl;
-        this->print_head(os, prettyTable) << std::endl;
-        os << line << std::endl;
-        this->print_data(os, prettyTable, line);
-        return os;
-      }
-
-    protected:
-      static std::string split_line(const PrettyTable &prettyTable) {
-        std::stringstream stream;
-        stream << '+';
-        for (int i = 0; i != prettyTable.columnCount(); ++i) {
-          stream << std::string(prettyTable.columnAt(i).maxWidth() + 2, '-') << '+';
-        }
-        return stream.str();
-      }
-
-      std::ostream &print_head(std::ostream &os, const PrettyTable &prettyTable) {
-        os << '|';
-        for (int i = 0; i != prettyTable.columnCount(); ++i) {
-          auto &column = prettyTable.columnAt(i);
-          this->print_item(os, column.header(), column.maxWidth(), TabAlign::CENTER) << '|';
-        }
-        return os;
-      }
-
-      std::ostream &print_data(std::ostream &os, const PrettyTable &prettyTable, const std::string &line) {
-        for (int j = 0; j != prettyTable.rowCount(); ++j) {
-          os << '|';
-          for (int i = 0; i != prettyTable.columnCount(); ++i) {
-            auto &column = prettyTable.columnAt(i);
-            ns_pretab::ns_priv::TabPrinter::print_item(os, column.at(j), column.maxWidth(), column.align()) << '|';
-          }
-          os << '\n';
-          os << line << '\n';
-        }
-        return os;
-      }
-
-      static std::ostream &print_item(std::ostream &os, const std::string &content, int columnWidth, TabAlign align) {
-        os << ' ';
-        switch (align) {
-        case TabAlign::CENTER: {
-          int left_space = (columnWidth - content.size()) / 2;
-          int right_space = columnWidth - left_space - content.size();
-          os << std::string(left_space, ' ') << content << std::string(right_space, ' ');
-        } break;
-        case TabAlign::LEFT: {
-          os << std::left << std::setw(columnWidth) << content;
-        } break;
-        case TabAlign::RIGHT: {
-          os << std::right << std::setw(columnWidth) << content;
-        } break;
-        }
-        os << ' ';
-        return os;
-      }
-    } printer;
-
-    /**
-     * @brief output format for the pretty table
-     *
-     * @param os the ostream
-     * @param prettyTable the pretty table
-     * @return std::ostream&
-     */
-    static std::ostream &operator<<(std::ostream &os, const PrettyTable &prettyTable) {
-      return ns_priv::printer(os, prettyTable);
-    }
-
-  } // namespace ns_priv
-
+  static std::ostream &operator<<(std::ostream &os, const PrettyTable &tab) {
+    os << tab.toString();
+    return os;
+  }
 } // namespace ns_pretab
