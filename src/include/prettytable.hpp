@@ -11,11 +11,12 @@
 #include <set>
 #include <sstream>
 #include <string>
+#include <utility>
 #include <vector>
 
 namespace ns_pretab {
 #define THROW_EXCEPTION(where, msg) \
-  throw std::runtime_error(std::string("[ error from 'lib-pretab':'") + #where + "' ] " + msg)
+  throw std::runtime_error(std::string("[ error from 'lib-pretab':'") + #where + "' ] " + (msg))
 
   // Table grid alignment
   enum Align : int {
@@ -43,7 +44,7 @@ namespace ns_pretab {
       break;
     }
     return os;
-  };
+  }
 
   struct Grid {
     using Ptr = std::shared_ptr<Grid>;
@@ -69,35 +70,29 @@ namespace ns_pretab {
     /**
      * @brief construct a new Grid object
      */
-    Grid(const std::string &str, const Align &align,
+    Grid(std::string str, const Align &align,
          const std::size_t &row, const std::size_t &col,
          const std::size_t &rowspan, const std::size_t &colspan)
-        : _str(str), _align(align),
+        : _str(std::move(str)), _align(align),
           _row(row), _col(col),
           _rowspan(rowspan), _colspan(colspan) {}
 
     inline std::string &str() { return this->_str; }
-    inline const std::string &str() const { return this->_str; }
 
     inline Align &align() { return this->_align; }
-    inline const Align &align() const { return this->_align; }
 
     inline std::size_t &row() { return this->_row; }
-    inline const std::size_t &row() const { return this->_row; }
 
     inline std::size_t &col() { return this->_col; }
-    inline const std::size_t &col() const { return this->_col; }
 
     inline std::size_t &rowspan() { return this->_rowspan; }
-    inline const std::size_t &rowspan() const { return this->_rowspan; }
 
     inline std::size_t &colspan() { return this->_colspan; }
-    inline const std::size_t &colspan() const { return this->_colspan; }
   };
   /**
    * @brief override operator '<<' for type 'Grid'
    */
-  static std::ostream &operator<<(std::ostream &os, const Grid &obj) {
+  static std::ostream &operator<<(std::ostream &os, Grid obj) {
     os << '{';
     os << "'str': " << obj.str() << ", 'align': " << obj.align()
        << ", 'row': " << obj.row() << ", 'col': " << obj.col()
@@ -129,10 +124,10 @@ namespace ns_pretab {
     /**
      * @brief Construct a new Pretty Table object
      */
-    PrettyTable(std::size_t padding = 1) : _grids(), _colWidthVec(), _rowCount(0), _padding(padding) {}
+    explicit PrettyTable(std::size_t padding = 1) : _grids(), _colWidthVec(), _rowCount(0), _padding(padding) {}
 
     template <typename Type>
-    PrettyTable &addGrid(std::size_t row, std::size_t col, const Type &content,
+    PrettyTable &addGrid(std::size_t rowIdx, std::size_t colIdx, const Type &content,
                          Align align = Align::LEFT, std::size_t rowspan = 1, std::size_t colspan = 1) {
       // Converts an object to a string
       std::stringstream stream;
@@ -149,8 +144,8 @@ namespace ns_pretab {
       }
 
       // Judge whether the grid position to be added is occupied
-      for (int i = row; i != row + rowspan; ++i) {
-        for (int j = col; j != col + colspan; ++j) {
+      for (int i = int(rowIdx); i != rowIdx + rowspan; ++i) {
+        for (int j = int(colIdx); j != colIdx + colspan; ++j) {
           if (this->gridOccupied(i, j)) {
             THROW_EXCEPTION(addGrid, "The grid at position (" + std::to_string(i) + ", " + std::to_string(j) +
                                          ") is occupied. You cannot add a new grid here.");
@@ -160,31 +155,31 @@ namespace ns_pretab {
       }
 
       // Add new grid
-      this->_grids.push_back(std::make_shared<Grid>(str, align, row, col, rowspan, colspan));
+      this->_grids.push_back(std::make_shared<Grid>(str, align, rowIdx, colIdx, rowspan, colspan));
 
       // If the number of rows is not enough, expand the number of rows
-      if (row + rowspan > this->rows()) {
-        this->_rowCount = row + rowspan;
+      if (rowIdx + rowspan > this->rows()) {
+        this->_rowCount = rowIdx + rowspan;
       }
 
       // If the number of cols is not enough, expand the number of cols
-      if (col + colspan > this->cols()) {
-        this->_colWidthVec.resize(col + colspan, 0);
+      if (colIdx + colspan > this->cols()) {
+        this->_colWidthVec.resize(colIdx + colspan, 0);
       }
 
       // Adjust the content width of each column
       std::size_t width = (colspan - 1) * (this->_padding * 2 + 1);
       for (int i = 0; i != colspan; ++i) {
-        width += this->_colWidthVec.at(col + i);
+        width += this->_colWidthVec.at(colIdx + i);
       }
 
       // If the content cannot be placed, increase the width of the corresponding column
       if (str.size() > width) {
-        std::size_t deta = (str.size() - width) / colspan;
+        std::size_t delta = (str.size() - width) / colspan;
         for (int i = 0; i != colspan - 1; ++i) {
-          this->_colWidthVec.at(col + i) += deta;
+          this->_colWidthVec.at(colIdx + i) += delta;
         }
-        this->_colWidthVec.at(col + colspan - 1) += str.size() - width - deta * (colspan - 1);
+        this->_colWidthVec.at(colIdx + colspan - 1) += str.size() - width - delta * (colspan - 1);
       }
 
       return *this;
@@ -194,19 +189,19 @@ namespace ns_pretab {
     /**
      * @brief Gets the number of rows in the table
      */
-    std::size_t rows() const {
+    [[nodiscard]] std::size_t rows() const {
       return this->_rowCount;
     }
     /**
      * @brief Gets the number of columns in the table
      */
-    std::size_t cols() const {
+    [[nodiscard]] std::size_t cols() const {
       return this->_colWidthVec.size();
     }
     /**
      * @brief Judge whether the table is empty
      */
-    bool empty() const {
+    [[nodiscard]] bool empty() const {
       return this->rows() == 0 && this->cols() == 0;
     }
 
@@ -228,7 +223,7 @@ namespace ns_pretab {
     /**
      * @brief Convert table to string for printing
      */
-    std::string toString() const {
+    [[nodiscard]] std::string toString() const {
       // If the form is empty, the empty form is printed
       if (this->empty()) {
         return PrettyTable().addGrid(0, 0, "empty").toString();
@@ -258,7 +253,7 @@ namespace ns_pretab {
           charStartCol += 2 * this->_padding + 1 + this->_colWidthVec.at(i);
         }
         std::size_t charWidth = (cs - 1) * (this->_padding * 2 + 1) + 2 * this->_padding;
-        for (int i = c; i != c + cs; ++i) {
+        for (int i = int(c); i != c + cs; ++i) {
           charWidth += this->_colWidthVec.at(i);
         }
         // Clear content
@@ -278,7 +273,7 @@ namespace ns_pretab {
           charStartCol += 2 * this->_padding + 1 + this->_colWidthVec.at(i);
         }
         std::size_t charWidth = (cs - 1) * (this->_padding * 2 + 1);
-        for (int i = c; i != c + cs; ++i) {
+        for (int i = int(c); i != c + cs; ++i) {
           charWidth += this->_colWidthVec.at(i);
         }
         std::string gridStr;
