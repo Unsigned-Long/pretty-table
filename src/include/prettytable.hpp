@@ -115,6 +115,8 @@ namespace ns_pretab {
     std::vector<std::size_t> _colWidthVec;
     // Number of rows to store the table
     std::size_t _rowCount;
+    // the precision for float values
+    std::size_t _precision;
     // Padding value of grid content
     const std::size_t _padding;
     // Records the grid used by the current table
@@ -124,14 +126,27 @@ namespace ns_pretab {
     /**
      * @brief Construct a new Pretty Table object
      */
-    explicit PrettyTable(std::size_t padding = 1) : _grids(), _colWidthVec(), _rowCount(0), _padding(padding) {}
+    explicit PrettyTable(std::size_t precision = 3, std ::size_t padding = 1)
+        : _grids(), _colWidthVec(), _rowCount(0), _precision(precision), _padding(padding) {}
 
+    /**
+     * @brief add a grid to current table
+     *
+     * @tparam Type the type of the content to be added
+     * @param rowIdx the row index
+     * @param colIdx the column index
+     * @param content the context
+     * @param align the alignment
+     * @param rowspan the rowspan of this grid
+     * @param colspan the colspan of this grid
+     */
     template <typename Type>
-    PrettyTable &addGrid(std::size_t rowIdx, std::size_t colIdx, const Type &content,
-                         Align align = Align::LEFT, std::size_t rowspan = 1, std::size_t colspan = 1) {
+    PrettyTable &addGrid(std::size_t rowIdx, std::size_t colIdx,
+                         const Type &content, Align align = Align::LEFT,
+                         std::size_t rowspan = 1, std::size_t colspan = 1) {
       // Converts an object to a string
       std::stringstream stream;
-      stream << content;
+      stream << std::fixed << std::setprecision(this->_precision) << content;
       std::string str;
       stream >> str;
 
@@ -185,11 +200,94 @@ namespace ns_pretab {
       return *this;
     }
 
+    /**
+     * @brief add row grids
+     *
+     * @tparam Type the type of the content to be added
+     * @param rowIdx the row index
+     * @param rowspan the rowspan for these grids
+     * @param startColIdx the start column index for these contents
+     * @param singleGridColspan single grid column span
+     * @param align the alignment
+     * @param content the content
+     * @return PrettyTable&
+     */
+    template <typename Type>
+    PrettyTable &addRowGrids(std::size_t rowIdx, std::size_t rowspan,
+                             std::size_t startColIdx, std::size_t singleGridColspan,
+                             Align align, const Type &content) {
+      return this->addGrid(rowIdx, startColIdx, content, align, rowspan, singleGridColspan);
+    }
+
+    /**
+     * @brief add row grids
+     *
+     * @tparam Type the type of the content to be added
+     * @tparam Types the types of else contents to be added
+     * @param rowIdx the row index
+     * @param rowspan the rowspan for these grids
+     * @param startColIdx the start column index for these contents
+     * @param singleGridColspan single grid column span
+     * @param align the alignment
+     * @param content the content
+     * @param contents else contents
+     * @return PrettyTable&
+     */
+    template <typename Type, typename... Types>
+    PrettyTable &addRowGrids(std::size_t rowIdx, std::size_t rowspan,
+                             std::size_t startColIdx, std::size_t singleGridColspan,
+                             Align align, const Type &content, const Types &...contents) {
+      this->addGrid(rowIdx, startColIdx, content, align, rowspan, singleGridColspan);
+      return this->addRowGrids(rowIdx, rowspan, startColIdx + singleGridColspan, singleGridColspan, align, contents...);
+    }
+
+    /**
+     * @brief add column grids
+     *
+     * @tparam Type the type of the content to be added
+     * @param colIdx the column index
+     * @param colspan the column span for these grids
+     * @param startRowIdx the start row index for these contents
+     * @param singleGridRowspan single grid row span
+     * @param align the alignment
+     * @param content the context
+     * @return PrettyTable&
+     */
+    template <typename Type>
+    PrettyTable &addColGrids(std::size_t colIdx, std::size_t colspan,
+                             std::size_t startRowIdx, std::size_t singleGridRowspan,
+                             Align align, const Type &content) {
+      return this->addGrid(startRowIdx, colIdx, content, align, singleGridRowspan, colspan);
+    }
+
+    /**
+     * @brief add column grids
+     *
+     * @tparam Type the type of the content to be added
+     * @tparam Types the types of else contents to be added
+     * @param colIdx the column index
+     * @param colspan the column span for these grids
+     * @param startRowIdx the start row index for these contents
+     * @param singleGridRowspan single grid row span
+     * @param align the alignment
+     * @param content the content
+     * @param contents else contents
+     * @return PrettyTable&
+     */
+    template <typename Type, typename... Types>
+    PrettyTable &addColGrids(std::size_t colIdx, std::size_t colspan,
+                             std::size_t startRowIdx, std::size_t singleGridRowspan,
+                             Align align, const Type &content, const Types &...contents) {
+      this->addGrid(startRowIdx, colIdx, content, align, singleGridRowspan, colspan);
+      return this->addColGrids(colIdx, colspan, startRowIdx + singleGridRowspan, singleGridRowspan, align, contents...);
+    }
+
   protected:
     /**
      * @brief Gets the number of rows in the table
      */
-    [[nodiscard]] std::size_t rows() const {
+    [[nodiscard]] std::size_t
+    rows() const {
       return this->_rowCount;
     }
     /**
