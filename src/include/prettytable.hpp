@@ -116,7 +116,7 @@ namespace ns_pretab {
     // Number of rows to store the table
     std::size_t _rowCount;
     // the precision for float values
-    std::size_t _precision;
+    int _precision;
     // Padding value of grid content
     const std::size_t _padding;
     // Records the grid used by the current table
@@ -126,7 +126,7 @@ namespace ns_pretab {
     /**
      * @brief Construct a new Pretty Table object
      */
-    explicit PrettyTable(std::size_t precision = 3, std ::size_t padding = 1)
+    explicit PrettyTable(int precision = 3, std ::size_t padding = 1)
         : _grids(), _colWidthVec(), _rowCount(0), _precision(precision), _padding(padding) {}
 
     /**
@@ -324,7 +324,7 @@ namespace ns_pretab {
     [[nodiscard]] std::string toString() const {
       // If the form is empty, the empty form is printed
       if (this->empty()) {
-        return PrettyTable().addGrid(0, 0, "empty").toString();
+        return "+-------+\n| empty |\n+-------+";
       }
 
       // Create two types of boundaries for tables
