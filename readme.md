@@ -44,85 +44,69 @@ tab.addGrid(1, 0, "pretty-table").addGrid(1, 1, "https://github.com/Unsigned-Lon
 
 code:
 
-```cpp
-tab.addGrid(1, 1, "hello", ns_pretab::Align::CENTER, 2, 2);
-tab.addGrid(0, 4, "world", ns_pretab::Align::CENTER, 2, 2);
-tab.addGrid(2, 3, "pretty-table", ns_pretab::Align::CENTER, 1, 3);
-tab.addGrid(0, 3, "Ubuntu", ns_pretab::Align::CENTER, 2, 1);
-tab.addGrid(0, 0, "cpp", ns_pretab::Align::CENTER, 1, 2);
-tab.addGrid(1, 0, "SGG", ns_pretab::Align::CENTER, 2, 1);
-tab.addGrid(0, 2, "^-^", ns_pretab::Align::CENTER, 1, 1);
-```
+<img src="./imgs/code2.png" width=80%>
 
 output:
 
 ```cpp
-+-----+---+-----+--------+----+-----+
-|   cpp   | ^-^ |        |          |
-+-----+---+-----+ Ubuntu +  world   +
-|     |         |        |          |
-+ SGG +  hello  +--------+----+-----+
-|     |         |   pretty-table    |
-+-----+---+-----+--------+----+-----+
++-----+---+---------+--------+----+-----+
+|   cpp   | 3.14159 |        |          |
++-----+---+---------+ Ubuntu +  world   +
+|     |             |        |          |
++ SGG +    hello    +--------+----+-----+
+|     |             |   pretty-table    |
++-----+---+---------+--------+----+-----+
 ```
 
 code:
 
-```cpp
-tab.addGrid(0, 0, h.at(0)).addGrid(0, 1, h.at(1)).addGrid(0, 2, h.at(2));
-for (int i = 0; i != vec.size(); i++) {
-  auto &elem = vec.at(i);
-  tab.addGrid(i + 1, 0, elem.id()).addGrid(i + 1, 1, elem.name()).addGrid(i + 1, 2, elem.score());
-}
-```
+<img src="./imgs/code3.png" width=80%>
 
 output:
 
 ```cpp
-+--------+--------+-------+
-| id     | name   | score |
-+--------+--------+-------+
-| 201901 | Tom    | 81.1  |
-+--------+--------+-------+
-| 201902 | Jhon   | 93.5  |
-+--------+--------+-------+
-| 201903 | Jerry  | 95.3  |
-+--------+--------+-------+
-| 201904 | Albert | 95.6  |
-+--------+--------+-------+
-| 201905 | Mary   | 81.1  |
-+--------+--------+-------+
-| 201906 | Lily   | 95.6  |
-+--------+--------+-------+
-| 201907 | Lina   | 95.3  |
-+--------+--------+-------+
-| 201908 | Jack   | 81.1  |
-+--------+--------+-------+
-| 201909 | Bob    | 81.1  |
-+--------+--------+-------+
-| 201910 | Stack  | 95.3  |
-+--------+--------+-------+
++--------+-------+-------+
+|          Info          |
++--------+-------+-------+
+|        |       |       |
++ id     + name  + score +
+|        |       |       |
++--------+-------+-------+
+| 201901 | Tom   | 81.10 |
++--------+-------+-------+
+| 201902 | Jhon  | 93.50 |
++--------+-------+-------+
+| 201903 | Jerry | 95.30 |
++--------+-------+-------+
 ```
 
+code:
 
+<img src="./imgs/code4.png" width=80%>
 
-## 2. Usage
+output:
 
-### 2.1 Source Code
+```cpp
++------+-------+--------+--------+--------+
+|      | id    | 201901 | 201902 | 201903 |
++      +-------+--------+--------+--------+
+| Info | name  | Tom    | Jhon   | Jerry  |
++      +-------+--------+--------+--------+
+|      | score | 81.10  | 93.50  | 95.30  |
++------+-------+--------+--------+--------+
+```
 
-<img src="./imgs/code.png" width=100%>
+Output
 
-### 2.2 Output
+<img src="./imgs/output.png" width=50%>
 
-<img src="./imgs/output.png" width=80%>
-
-## 3. Structure
+## 2. Structure
 
 <img src="./drawer/Pretty-Table.png">
 
-## 4. Apis
+## 3. Apis
 
-### 4.1 Align
+### 3.1 Align
 
 ```cpp
 enum class Align {
@@ -137,15 +121,82 @@ enum class Align {
 
 
 
-### 4.2 PrettyTable
+### 3.2 PrettyTable
+
+**constructor**
 
 ```cpp
-template <typename Type> PrettyTable &addGrid(std::size_t row, std::size_t col, const Type &content, Align align = Align::LEFT, std::size_t rowspan = 1, std::size_t colspan = 1);
+/**
+ * @brief Construct a new Pretty Table object
+ */
+explicit PrettyTable(std::size_t precision = 3, std ::size_t padding = 1);
 ```
 
+**add a grid**
 
+```cpp
+/**
+ * @brief add a grid to current table
+ *
+ * @tparam Type the type of the content to be added
+ * @param rowIdx the row index
+ * @param colIdx the column index
+ * @param content the context
+ * @param align the alignment
+ * @param rowspan the rowspan of this grid
+ * @param colspan the colspan of this grid
+ */
+template <typename Type>
+PrettyTable &addGrid(std::size_t rowIdx, std::size_t colIdx,
+                      const Type &content, Align align = Align::LEFT,
+                      std::size_t rowspan = 1, std::size_t colspan = 1)
+```
 
+**add row grids**
 
+```cpp
+/**
+ * @brief add row grids
+ *
+ * @tparam Type the type of the content to be added
+ * @tparam Types the types of else contents to be added
+ * @param rowIdx the row index
+ * @param rowspan the rowspan for these grids
+ * @param startColIdx the start column index for these contents
+ * @param singleGridColspan single grid column span
+ * @param align the alignment
+ * @param content the content
+ * @param contents else contents
+ * @return PrettyTable&
+ */
+template <typename Type, typename... Types>
+PrettyTable &addRowGrids(std::size_t rowIdx, std::size_t rowspan,
+                          std::size_t startColIdx, std::size_t singleGridColspan,
+                          Align align, const Type &content, const Types &...contents)
+```
+
+**add column grids**
+
+```cpp
+/**
+ * @brief add column grids
+ *
+ * @tparam Type the type of the content to be added
+ * @tparam Types the types of else contents to be added
+ * @param colIdx the column index
+ * @param colspan the column span for these grids
+ * @param startRowIdx the start row index for these contents
+ * @param singleGridRowspan single grid row span
+ * @param align the alignment
+ * @param content the content
+ * @param contents else contents
+ * @return PrettyTable&
+ */
+template <typename Type, typename... Types>
+PrettyTable &addColGrids(std::size_t colIdx, std::size_t colspan,
+                          std::size_t startRowIdx, std::size_t singleGridRowspan,
+                          Align align, const Type &content, const Types &...contents)
+```
 
 
 
