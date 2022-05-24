@@ -100,13 +100,11 @@ Output
 
 <img src="./imgs/output.png" width=50%>
 
-## 2. Structure
 
-<img src="./drawer/Pretty-Table.png">
 
-## 3. Apis
+## 2. Apis
 
-### 3.1 Align
+### 2.1 Align
 
 ```cpp
 enum class Align {
@@ -121,7 +119,7 @@ enum class Align {
 
 
 
-### 3.2 PrettyTable
+### 2.2 PrettyTable
 
 **constructor**
 
