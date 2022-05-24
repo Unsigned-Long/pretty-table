@@ -122,12 +122,18 @@ namespace ns_pretab {
     // Records the grid used by the current table
     std::map<std::size_t, std::set<std::size_t>> _usedGrid;
 
+    const char _nodeChar;
+    const char _verticalChar;
+    const char _horizontalChar;
+
   public:
     /**
      * @brief Construct a new Pretty Table object
      */
-    explicit PrettyTable(int precision = 3, std ::size_t padding = 1)
-        : _grids(), _colWidthVec(), _rowCount(0), _precision(precision), _padding(padding) {}
+    explicit PrettyTable(int precision = 3, std ::size_t padding = 1,
+                         char nodeChar = '+', char verticalChar = '|', char horizontalChar = '-')
+        : _grids(), _colWidthVec(), _rowCount(0), _precision(precision), _padding(padding),
+          _nodeChar(nodeChar), _verticalChar(verticalChar), _horizontalChar(horizontalChar) {}
 
     /**
      * @brief add a grid to current table
@@ -324,14 +330,16 @@ namespace ns_pretab {
     [[nodiscard]] std::string toString() const {
       // If the form is empty, the empty form is printed
       if (this->empty()) {
-        return "+-------+\n| empty |\n+-------+";
+        return _nodeChar + std::string(_padding * 2 + 5, _horizontalChar) + _nodeChar + '\n' +
+               _verticalChar + std::string(_padding, ' ') + "empty" + std::string(_padding, ' ') + _verticalChar + '\n' +
+               _nodeChar + std::string(_padding * 2 + 5, _horizontalChar) + _nodeChar;
       }
 
       // Create two types of boundaries for tables
-      std::string line1("+"), line2("|");
+      std::string line1(1, _nodeChar), line2(1, _verticalChar);
       for (const auto &elem : this->_colWidthVec) {
-        line1 += std::string(2 * this->_padding + elem, '-') + '+';
-        line2 += std::string(2 * this->_padding + elem, ' ') + '|';
+        line1 += std::string(2 * this->_padding + elem, _horizontalChar) + _nodeChar;
+        line2 += std::string(2 * this->_padding + elem, ' ') + _verticalChar;
       }
 
       // Initialize table string

@@ -32,14 +32,15 @@ public:
 void example0() {
   ns_pretab::PrettyTable tab(1);
 
-  tab.addGrid(0, 0, "libname").addGrid(0, 1, "github");
-  tab.addGrid(1, 0, "pretty-table").addGrid(1, 1, "https://github.com/Unsigned-Long/pretty-table.git");
+  tab.addGrid(0, 0, "libname").addGrid(1, 0, "pretty-table");
+  tab.addGrid(0, 1, "version").addGrid(1, 1, "0.0.1");
+  tab.addGrid(0, 2, "github").addGrid(1, 2, "https://github.com/Unsigned-Long/pretty-table.git");
 
   std::cout << tab << std::endl;
 }
 
 void example1() {
-  ns_pretab::PrettyTable tab(5, 1);
+  ns_pretab::PrettyTable tab(5, 1, 'x', ':', '-');
 
   tab.addGrid(1, 1, "hello", ns_pretab::Align::CENTER, 2, 2);
   tab.addGrid(0, 4, "world", ns_pretab::Align::CENTER, 2, 2);
@@ -53,7 +54,7 @@ void example1() {
 }
 
 void example2() {
-  ns_pretab::PrettyTable tab(2, 1);
+  ns_pretab::PrettyTable tab(2, 1, 'o', '|', '-');
 
   auto [h, vec] = CSV_READ_FILE_H("../data/info.csv", ',', Info, int, std::string, float);
   tab.addGrid(0, 0, "Info", ns_pretab::Align::CENTER, 1, 3);
@@ -67,7 +68,7 @@ void example2() {
 }
 
 void example3() {
-  ns_pretab::PrettyTable tab(2, 1);
+  ns_pretab::PrettyTable tab(2, 1, '@', '|', '=');
 
   auto [h, vec] = CSV_READ_FILE_H("../data/info.csv", ',', Info, int, std::string, float);
   tab.addGrid(0, 0, "Info", ns_pretab::Align::CENTER, 3, 1);
@@ -82,6 +83,7 @@ void example3() {
 
 int main(int argc, char const *argv[]) {
   try {
+    std::cout << ns_pretab::PrettyTable() << std::endl;
     example0();
     example1();
     example2();
