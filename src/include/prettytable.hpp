@@ -48,6 +48,7 @@ namespace ns_pretab {
 
   struct Grid {
     using Ptr = std::shared_ptr<Grid>;
+    using ushort = unsigned short;
 
   private:
     /**
@@ -58,21 +59,21 @@ namespace ns_pretab {
     // Grid alignment
     Align _align;
     // Row number of grid
-    std::size_t _row;
+    ushort _row;
     // Column number of grid
-    std::size_t _col;
+    ushort _col;
     // Number of rows across the grid
-    std::size_t _rowspan;
+    ushort _rowspan;
     // Number of columns across the grid
-    std::size_t _colspan;
+    ushort _colspan;
 
   public:
     /**
      * @brief construct a new Grid object
      */
     Grid(std::string str, const Align &align,
-         const std::size_t &row, const std::size_t &col,
-         const std::size_t &rowspan, const std::size_t &colspan)
+         const ushort &row, const ushort &col,
+         const ushort &rowspan, const ushort &colspan)
         : _str(std::move(str)), _align(align),
           _row(row), _col(col),
           _rowspan(rowspan), _colspan(colspan) {}
@@ -81,13 +82,13 @@ namespace ns_pretab {
 
     inline Align &align() { return this->_align; }
 
-    inline std::size_t &row() { return this->_row; }
+    inline ushort &row() { return this->_row; }
 
-    inline std::size_t &col() { return this->_col; }
+    inline ushort &col() { return this->_col; }
 
-    inline std::size_t &rowspan() { return this->_rowspan; }
+    inline ushort &rowspan() { return this->_rowspan; }
 
-    inline std::size_t &colspan() { return this->_colspan; }
+    inline ushort &colspan() { return this->_colspan; }
   };
   /**
    * @brief override operator '<<' for type 'Grid'
@@ -108,19 +109,18 @@ namespace ns_pretab {
     friend std::ostream &operator<<(std::ostream &os, const PrettyTable &tab);
 
   private:
-  private:
     // Store existing valid grids
     std::vector<Grid::Ptr> _grids;
     // Stores the width of each column of the table
-    std::vector<std::size_t> _colWidthVec;
+    std::vector<ushort> _colWidthVec;
     // Number of rows to store the table
-    std::size_t _rowCount;
+    ushort _rowCount;
     // the precision for float values
     int _precision;
     // Padding value of grid content
-    const std::size_t _padding;
+    const ushort _padding;
     // Records the grid used by the current table
-    std::map<std::size_t, std::set<std::size_t>> _usedGrid;
+    std::map<ushort, std::set<ushort>> _usedGrid;
 
     const char _nodeChar;
     const char _verticalChar;
@@ -147,9 +147,9 @@ namespace ns_pretab {
      * @param colspan the colspan of this grid
      */
     template <typename Type>
-    PrettyTable &addGrid(std::size_t rowIdx, std::size_t colIdx,
+    PrettyTable &addGrid(ushort rowIdx, ushort colIdx,
                          const Type &content, Align align = Align::LEFT,
-                         std::size_t rowspan = 1, std::size_t colspan = 1) {
+                         ushort rowspan = 1, ushort colspan = 1) {
       // Converts an object to a string
       std::stringstream stream;
       stream << std::fixed << std::setprecision(this->_precision) << content;
@@ -189,14 +189,14 @@ namespace ns_pretab {
       }
 
       // Adjust the content width of each column
-      std::size_t width = (colspan - 1) * (this->_padding * 2 + 1);
+      ushort width = (colspan - 1) * (this->_padding * 2 + 1);
       for (int i = 0; i != colspan; ++i) {
         width += this->_colWidthVec.at(colIdx + i);
       }
 
       // If the content cannot be placed, increase the width of the corresponding column
       if (str.size() > width) {
-        std::size_t delta = (str.size() - width) / colspan;
+        ushort delta = (str.size() - width) / colspan;
         for (int i = 0; i != colspan - 1; ++i) {
           this->_colWidthVec.at(colIdx + i) += delta;
         }
@@ -219,8 +219,8 @@ namespace ns_pretab {
      * @return PrettyTable&
      */
     template <typename Type>
-    PrettyTable &addRowGrids(std::size_t rowIdx, std::size_t rowspan,
-                             std::size_t startColIdx, std::size_t singleGridColspan,
+    PrettyTable &addRowGrids(ushort rowIdx, ushort rowspan,
+                             ushort startColIdx, ushort singleGridColspan,
                              Align align, const Type &content) {
       return this->addGrid(rowIdx, startColIdx, content, align, rowspan, singleGridColspan);
     }
@@ -240,8 +240,8 @@ namespace ns_pretab {
      * @return PrettyTable&
      */
     template <typename Type, typename... Types>
-    PrettyTable &addRowGrids(std::size_t rowIdx, std::size_t rowspan,
-                             std::size_t startColIdx, std::size_t singleGridColspan,
+    PrettyTable &addRowGrids(ushort rowIdx, ushort rowspan,
+                             ushort startColIdx, ushort singleGridColspan,
                              Align align, const Type &content, const Types &...contents) {
       this->addGrid(rowIdx, startColIdx, content, align, rowspan, singleGridColspan);
       return this->addRowGrids(rowIdx, rowspan, startColIdx + singleGridColspan, singleGridColspan, align, contents...);
@@ -260,8 +260,8 @@ namespace ns_pretab {
      * @return PrettyTable&
      */
     template <typename Type>
-    PrettyTable &addColGrids(std::size_t colIdx, std::size_t colspan,
-                             std::size_t startRowIdx, std::size_t singleGridRowspan,
+    PrettyTable &addColGrids(ushort colIdx, ushort colspan,
+                             ushort startRowIdx, ushort singleGridRowspan,
                              Align align, const Type &content) {
       return this->addGrid(startRowIdx, colIdx, content, align, singleGridRowspan, colspan);
     }
@@ -281,8 +281,8 @@ namespace ns_pretab {
      * @return PrettyTable&
      */
     template <typename Type, typename... Types>
-    PrettyTable &addColGrids(std::size_t colIdx, std::size_t colspan,
-                             std::size_t startRowIdx, std::size_t singleGridRowspan,
+    PrettyTable &addColGrids(ushort colIdx, ushort colspan,
+                             ushort startRowIdx, ushort singleGridRowspan,
                              Align align, const Type &content, const Types &...contents) {
       this->addGrid(startRowIdx, colIdx, content, align, singleGridRowspan, colspan);
       return this->addColGrids(colIdx, colspan, startRowIdx + singleGridRowspan, singleGridRowspan, align, contents...);
@@ -292,16 +292,17 @@ namespace ns_pretab {
     /**
      * @brief Gets the number of rows in the table
      */
-    [[nodiscard]] std::size_t
-    rows() const {
+    [[nodiscard]] ushort rows() const {
       return this->_rowCount;
     }
+    
     /**
      * @brief Gets the number of columns in the table
      */
-    [[nodiscard]] std::size_t cols() const {
+    [[nodiscard]] ushort cols() const {
       return this->_colWidthVec.size();
     }
+    
     /**
      * @brief Judge whether the table is empty
      */
@@ -312,7 +313,7 @@ namespace ns_pretab {
     /**
      * @brief check whether the grid position to be added is occupied
      */
-    bool gridOccupied(std::size_t r, std::size_t c) {
+    bool gridOccupied(ushort r, ushort c) {
       auto iter1 = this->_usedGrid.find(r);
       if (iter1 == this->_usedGrid.cend()) {
         return false;
@@ -350,15 +351,15 @@ namespace ns_pretab {
       }
 
       // For each grid, clear the content in the corresponding position
-      auto clear = [this, &str, &line1](std::size_t r, std::size_t c,
-                                        std::size_t rs, std::size_t cs) {
+      auto clear = [this, &str, &line1](ushort r, ushort c,
+                                        ushort rs, ushort cs) {
         // Find the content in the corresponding location
-        std::size_t charStartRow = 2 * r + 1;
-        std::size_t charStartCol = 1;
+        ushort charStartRow = 2 * r + 1;
+        ushort charStartCol = 1;
         for (int i = 0; i != c; ++i) {
           charStartCol += 2 * this->_padding + 1 + this->_colWidthVec.at(i);
         }
-        std::size_t charWidth = (cs - 1) * (this->_padding * 2 + 1) + 2 * this->_padding;
+        ushort charWidth = (cs - 1) * (this->_padding * 2 + 1) + 2 * this->_padding;
         for (int i = int(c); i != c + cs; ++i) {
           charWidth += this->_colWidthVec.at(i);
         }
@@ -369,16 +370,16 @@ namespace ns_pretab {
       };
 
       // For each grid, replace the contents of the corresponding position
-      auto replace = [this, &str, &line1](std::size_t r, std::size_t c,
-                                          std::size_t rs, std::size_t cs,
+      auto replace = [this, &str, &line1](ushort r, ushort c,
+                                          ushort rs, ushort cs,
                                           Align align, const std::string &s) {
         // Find the content in the corresponding location
-        std::size_t charStartRow = 2 * r + rs;
-        std::size_t charStartCol = 1 + this->_padding;
+        ushort charStartRow = 2 * r + rs;
+        ushort charStartCol = 1 + this->_padding;
         for (int i = 0; i != c; ++i) {
           charStartCol += 2 * this->_padding + 1 + this->_colWidthVec.at(i);
         }
-        std::size_t charWidth = (cs - 1) * (this->_padding * 2 + 1);
+        ushort charWidth = (cs - 1) * (this->_padding * 2 + 1);
         for (int i = int(c); i != c + cs; ++i) {
           charWidth += this->_colWidthVec.at(i);
         }
@@ -391,8 +392,8 @@ namespace ns_pretab {
           gridStr = s + std::string(charWidth - s.size(), ' ');
           break;
         case Align::CENTER:
-          std::size_t left = (charWidth - s.size()) / 2;
-          std::size_t right = charWidth - s.size() - left;
+          ushort left = (charWidth - s.size()) / 2;
+          ushort right = charWidth - s.size() - left;
           gridStr = std::string(left, ' ') + s + std::string(right, ' ');
           break;
         }
