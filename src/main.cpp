@@ -4,29 +4,9 @@
 #include <cmath>
 
 struct Info {
-private:
-  /**
-   * @brief the members
-   */
   int _id;
   std::string _name;
   float _score;
-
-public:
-  /**
-   * @brief construct a new Info object
-   */
-  Info(const int &id, const std::string &name, const float &score)
-      : _id(id), _name(name), _score(score) {}
-
-  inline int &id() { return this->_id; }
-  inline const int &id() const { return this->_id; }
-
-  inline std::string &name() { return this->_name; }
-  inline const std::string &name() const { return this->_name; }
-
-  inline float &score() { return this->_score; }
-  inline const float &score() const { return this->_score; }
 };
 
 void example0() {
@@ -55,13 +35,12 @@ void example1() {
 
 void example2() {
   ns_pretab::PrettyTable tab(2, 1, 'o', '|', '-');
-
-  auto [h, vec] = CSV_READ_FILE_H("../data/info.csv", ',', Info, int, std::string, float);
+  auto [h, vec] = ns_csv::CSVReader::readWithHeader<CSV_STRUCT(Info, _id, _name, _score)>("../data/info.csv", ',');
   tab.addGrid(0, 0, "Info", ns_pretab::Align::CENTER, 1, 3);
   tab.addRowGrids(1, 2, 0, 1, ns_pretab::Align::LEFT, h.at(0), h.at(1), h.at(2));
   for (int i = 0; i != vec.size(); i++) {
     auto &elem = vec.at(i);
-    tab.addRowGrids(i + 3, 1, 0, 1, ns_pretab::Align::LEFT, elem.id(), elem.name(), elem.score());
+    tab.addRowGrids(i + 3, 1, 0, 1, ns_pretab::Align::LEFT, elem._id, elem._name, elem._score);
   }
 
   std::cout << tab << std::endl;
@@ -69,13 +48,13 @@ void example2() {
 
 void example3() {
   ns_pretab::PrettyTable tab(2, 1, '@', '|', '=');
+  auto [h, vec] = ns_csv::CSVReader::readWithHeader<CSV_STRUCT(Info, _id, _name, _score)>("../data/info.csv", ',');
 
-  auto [h, vec] = CSV_READ_FILE_H("../data/info.csv", ',', Info, int, std::string, float);
   tab.addGrid(0, 0, "Info", ns_pretab::Align::CENTER, 3, 1);
   tab.addColGrids(1, 1, 0, 1, ns_pretab::Align::LEFT, h.at(0), h.at(1), h.at(2));
   for (int i = 0; i != vec.size(); i++) {
     auto &elem = vec.at(i);
-    tab.addColGrids(i + 2, 1, 0, 1, ns_pretab::Align::LEFT, elem.id(), elem.name(), elem.score());
+    tab.addColGrids(i + 2, 1, 0, 1, ns_pretab::Align::LEFT, elem._id, elem._name, elem._score);
   }
 
   std::cout << tab << std::endl;
