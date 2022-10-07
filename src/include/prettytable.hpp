@@ -46,6 +46,18 @@ namespace ns_pretab {
     return os;
   }
 
+  static std::stringstream &operator>>(std::stringstream &os, char *str) {
+    // don't define, 'os >> str' will escape the space
+    strcpy(str, os.str().c_str());
+    return os;
+  }
+
+  static std::stringstream &operator>>(std::stringstream &os, std::string &str) {
+    // don't define, 'os >> str' will escape the space
+    str = os.str();
+    return os;
+  }
+
   struct Grid {
     using Ptr = std::shared_ptr<Grid>;
     using ushort = unsigned short;
@@ -295,14 +307,14 @@ namespace ns_pretab {
     [[nodiscard]] ushort rows() const {
       return this->_rowCount;
     }
-    
+
     /**
      * @brief Gets the number of columns in the table
      */
     [[nodiscard]] ushort cols() const {
       return this->_colWidthVec.size();
     }
-    
+
     /**
      * @brief Judge whether the table is empty
      */
