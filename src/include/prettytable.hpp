@@ -13,6 +13,7 @@
 #include <string>
 #include <utility>
 #include <vector>
+#include <cstring>
 
 namespace ns_pretab {
 #define THROW_EXCEPTION(where, msg) \
